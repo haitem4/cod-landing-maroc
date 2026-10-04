@@ -1,0 +1,164 @@
+{
+  "slug": "produit-b",
+  "lang": "fr",
+  "theme": {
+    "primary": "#0284c7",
+    "accent": "#0d9488",
+    "background": "#f8fafc",
+    "text": "#0f172a"
+  },
+  "logoText": "PRO CLEAN MAROC",
+  "badgeHeader": "⚡ LIVRAISON GRATUITE À CASABLANCA (30 DH HORS CASA) - Paiement à la Réception",
+  "whatsappNumber": "212600000000",
+  "title": "Nettoyeur Haute Pression Sans Fil Pro 48V Max",
+  "subtitle": "Lavez votre voiture, terrasse, tapis et façades sans prise électrique ni tuyau encombrant. Puissance extrême 45 bars, 2 batteries rechargeables et kit complet 6-en-1.",
+  "heroImage": "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=800&auto=format&fit=crop&q=80",
+  "gallery": [
+    "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=800&auto=format&fit=crop&q=80"
+  ],
+  "videoOrGif": "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=800&auto=format&fit=crop&q=80",
+  "problem": {
+    "title": "Fatigué des lavages auto coûteux et des tuyaux d'arrosage sans pression ?",
+    "subtitle": "Les méthodes traditionnelles gaspillent de l'eau, prennent du temps et demandent des rallonges électriques dangereuses.",
+    "points": [
+      "Dépenser plus de 200 DH par mois dans les stations de lavage auto",
+      "Perdre son week-end à tirer des rallonges et des tuyaux lourds",
+      "Pression insuffisante pour éliminer les taches de boue et la saleté incrustée",
+      "Gaspillage massif d'eau avec les tuyaux d'arrosage classiques"
+    ],
+    "solutionTitle": "La Liberté Totale du Nettoyage Haute Pression Sans Fil !",
+    "solutionPoints": [
+      "Pression puissante de 45 bars pour décoller la crasse instantanément",
+      "Puise l'eau de n'importe où : seau, bouteille, bidon ou robinet",
+      "2 batteries Lithium-ion 48V pour plus de 60 minutes d'autonomie",
+      "Buse multifonction 6-en-1 + réservoir à mousse pour un shampoing pro"
+    ]
+  },
+  "benefits": [
+    {
+      "icon": "BatteryCharging",
+      "title": "100% Sans Fil & Portable",
+      "text": "Emportez-le partout dans son coffret antichoc. Idéal pour voiture, moto et maison."
+    },
+    {
+      "icon": "Gauge",
+      "title": "Pression Réelle 45 Bars",
+      "text": "Moteur cuivre renforcé générant un jet puissant capable de décrasser les surfaces les plus dures."
+    },
+    {
+      "icon": "Droplets",
+      "title": "Économie d'Eau de 70%",
+      "text": "Consomme jusqu'à 3 fois moins d'eau qu'un tuyau classique pour une efficacité décuplée."
+    },
+    {
+      "icon": "PackageCheck",
+      "title": "Coffret Complet 6 Accessoires",
+      "text": "Inclus : pistolet, 2 batteries, chargeur rapide, tuyau 5m avec filtre, buse haute pression et pot à mousse."
+    }
+  ],
+  "reviews": [
+    {
+      "name": "Karim Benani",
+      "city": "Casablanca",
+      "rating": 5,
+      "text": "Franchement bluffé par la pression ! Je lave ma voiture avec un simple seau de 10L en 10 minutes chrono. La mallette est très complète.",
+      "photo": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+      "date": "Il y a 3 jours"
+    },
+    {
+      "name": "Mehdi Tazi",
+      "city": "Rabat",
+      "rating": 5,
+      "text": "Livraison en 24h à Rabat, livreur très courtois. J'ai nettoyé ma terrasse et les volets roulants sans aucune difficulté. Produit conforme à 100%.",
+      "photo": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
+      "date": "Il y a 5 jours"
+    },
+    {
+      "name": "Sarah Amrani",
+      "city": "Marrakech",
+      "rating": 5,
+      "text": "Très léger et maniable, même pour une femme. Les 2 batteries permettent de tout faire tranquillement. Je recommande les yeux fermés !",
+      "photo": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
+      "date": "Il y a 1 semaine"
+    }
+  ],
+  "offers": [
+    {
+      "qty": 1,
+      "price": 349,
+      "originalPrice": 599,
+      "label": "Pack Solo (1 Pistolet + 1 Batterie 48V + Accessoires)",
+      "badge": "Économie 250 DH",
+      "default": false
+    },
+    {
+      "qty": 2,
+      "price": 549,
+      "originalPrice": 1098,
+      "label": "Pack Pro Max (1 Pistolet + 2 Batteries 48V + Mallette Pro)",
+      "badge": "⭐ Meilleur Choix - Recommandé",
+      "default": true
+    },
+    {
+      "qty": 3,
+      "price": 899,
+      "originalPrice": 1647,
+      "label": "Pack Duo Famille (2 Coffrets Complets avec 4 Batteries)",
+      "badge": "🔥 Remise Exceptionnelle",
+      "default": false
+    }
+  ],
+  "currency": "DH",
+  "trustBadges": [
+    "Paiement à la livraison après vérification",
+    "Livraison Gratuite à Casa (30 DH Hors Casa)",
+    "Garantie satisfait ou remboursé 7 jours",
+    "Service client disponible 7j/7"
+  ],
+  "faq": [
+    {
+      "q": "Comment fonctionne le paiement à la livraison (COD) ?",
+      "a": "Vous commandez en remplissant vos coordonnées sans payer à l'avance. Notre équipe vous appelle pour confirmer votre adresse, et vous payez le livreur en espèces dès réception de votre colis."
+    },
+    {
+      "q": "Quels sont les frais et délais de livraison ?",
+      "a": "La livraison est 100% GRATUITE à Casablanca, et de 30 DH seulement pour toutes les autres villes du Maroc. Délai de livraison express : 24h à 48h."
+    },
+    {
+      "q": "Quelle est l'autonomie des batteries ?",
+      "a": "Chaque batterie Lithium-ion 48V offre environ 30 à 45 minutes d'utilisation continue. Avec le Pack Pro (2 batteries), vous disposez de plus d'une heure de travail non-stop."
+    },
+    {
+      "q": "Puis-je utiliser l'eau d'un seau ou d'un cours d'eau ?",
+      "a": "Oui, absolument ! Le tuyau de 5 mètres est équipé d'un filtre haute densité auto-amorçant qui vous permet de puiser l'eau directement dans un seau, une bouteille ou un réservoir sans brancher au robinet."
+    }
+  ],
+  "pixelId": "123456789012345",
+  "cities": [
+    "Casablanca",
+    "Rabat",
+    "Marrakech",
+    "Tanger",
+    "Fès",
+    "Agadir",
+    "Meknès",
+    "Oujda",
+    "Kénitra",
+    "Tétouan",
+    "Salé",
+    "Témara",
+    "Mohammedia",
+    "El Jadida",
+    "Béni Mellal",
+    "Nador",
+    "Khouribga",
+    "Settat",
+    "Berrechid",
+    "Autre ville"
+  ],
+  "guaranteeText": "Garantie Sérénité : Testez votre appareil en toute tranquillité. Satisfait ou remboursé sous 7 jours ouvrés.",
+  "ctaText": "Commander Maintenant - Paiement à la Livraison"
+}
