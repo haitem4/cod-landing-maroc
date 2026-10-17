@@ -33,17 +33,36 @@ export interface FAQItem {
   aEn: string;
 }
 
+export const getAssetPath = (path: string): string => {
+  if (!path) return path;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+
+  let base = process.env.NEXT_PUBLIC_BASE_PATH;
+  if (!base && typeof window !== "undefined") {
+    if (window.location.pathname.startsWith("/cod-landing-maroc")) {
+      base = "/cod-landing-maroc";
+    }
+  }
+  if (!base && process.env.NODE_ENV === "production") {
+    base = "/cod-landing-maroc";
+  }
+
+  const cleanBase = base ? (base.endsWith("/") ? base.slice(0, -1) : base) : "";
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${cleanBase}${cleanPath}`;
+};
+
 export const PRODUCT_IMAGES = {
-  orangeHero: "/images/orange_clean.webp",
-  blackHero: "/images/black_clean.webp",
-  greyHero: "/images/grey_clean.webp",
-  features: "/images/features_clean.webp",
-  benefits: "/images/benefits.webp",
-  clinical: "/images/clinical_clean.webp",
-  comparison: "/images/comparison_clean.webp",
-  howToUse: "/images/howToUse_clean.webp",
-  doctor: "/images/doctor_clean.webp",
-  ebook: "/images/ebook_clean.jpg",
+  orangeHero: getAssetPath("/images/orange_clean.webp"),
+  blackHero: getAssetPath("/images/black_clean.webp"),
+  greyHero: getAssetPath("/images/grey_clean.webp"),
+  features: getAssetPath("/images/features_clean.webp"),
+  benefits: getAssetPath("/images/benefits.webp"),
+  clinical: getAssetPath("/images/clinical_clean.webp"),
+  comparison: getAssetPath("/images/comparison_clean.webp"),
+  howToUse: getAssetPath("/images/howToUse_clean.webp"),
+  doctor: getAssetPath("/images/doctor_clean.webp"),
+  ebook: getAssetPath("/images/ebook_clean.jpg"),
 };
 
 export const COLOR_OPTIONS = [

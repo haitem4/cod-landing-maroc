@@ -175,6 +175,16 @@ export const FiveReasonsSection: React.FC<FiveReasonsSectionProps> = ({ lang }) 
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             )}
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById("hero-product");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="w-full mt-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-4 rounded-xl border border-slate-300/80 transition-all text-xs sm:text-sm flex items-center justify-center gap-1.5"
+          >
+            <span>{isAr ? "معاينة صور المنتج ومواصفاته بالتفصيل ↓" : "View Product Photos & Full Specs ↓"}</span>
+          </button>
           <div className="mt-2 flex items-center justify-center gap-4 text-[11px] text-slate-500 font-bold">
             <span className="flex items-center gap-1">
               <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />

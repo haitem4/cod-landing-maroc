@@ -56,8 +56,11 @@ export default function ConfortProLandingPage() {
         {/* 1. HEADER (Top announcement + Logo + Language Switcher AR/EN) */}
         <Header lang={lang} onToggleLang={toggleLanguage} />
 
-        {/* 2. HERO PRODUCT ZONE */}
-        <section className="w-full pt-4 pb-6 px-4 bg-white border-b border-slate-100 space-y-4">
+        {/* 2. 5 REASONS TO BUY SECTION (PLACED BEFORE EVERYTHING) */}
+        <FiveReasonsSection lang={lang} />
+
+        {/* 3. HERO PRODUCT ZONE */}
+        <section id="hero-product" className="w-full pt-4 pb-6 px-4 bg-white border-b border-slate-100 space-y-4">
           {/* Gallery with dynamic color image */}
           <HeroGallery
             images={galleryImages}
@@ -160,10 +163,7 @@ export default function ConfortProLandingPage() {
           </div>
         </section>
 
-        {/* 2.5 FIVE REASONS TO BUY SECTION */}
-        <FiveReasonsSection lang={lang} />
-
-        {/* 3. ORDER SECTION (Color + Size + Bundle Stack + Moroccan COD Form) */}
+        {/* 4. ORDER SECTION (Color + Size + Bundle Stack + Moroccan COD Form) */}
         <div id="order-section" className="px-4 bg-slate-50/50">
           <OrderSection
             lang={lang}

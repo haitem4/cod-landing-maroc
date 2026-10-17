@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const repoName = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const repoName = process.env.NEXT_PUBLIC_BASE_PATH || (process.env.NODE_ENV === "production" ? "/cod-landing-maroc" : "");
 
 const nextConfig = {
   output: "export",
