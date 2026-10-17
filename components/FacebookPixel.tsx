@@ -2,7 +2,6 @@
 
 import { useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import Script from "next/script";
 import { FB_PIXEL_ID, pageview } from "@/lib/fpixel";
 
 function FacebookPixelTracking() {
@@ -28,9 +27,8 @@ export const FacebookPixel = () => {
       <Suspense fallback={null}>
         <FacebookPixelTracking />
       </Suspense>
-      <Script
+      <script
         id="fb-pixel"
-        strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
             !function(f,b,e,v,n,t,s)
