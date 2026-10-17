@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { Lang } from "@/lib/content";
 
+import { event as trackFbEvent } from "@/lib/fpixel";
+
 export function ConfirmationClient() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
@@ -31,11 +33,20 @@ export function ConfirmationClient() {
       const stored = sessionStorage.getItem("stepprs_last_order");
       if (stored) {
         try {
-          setOrder(JSON.parse(stored));
+          const parsed = JSON.parse(stored);
+          setOrder(parsed);
+          trackFbEvent("Purchase", {
+            content_name: "Confort Pro Insoles",
+            content_type: "product",
+            value: parsed.totalPrice || 199,
+            currency: "MAD",
+            order_id: parsed.orderId || orderId || "",
+            num_items: parsed.quantity || 1,
+          });
         } catch (e) {}
       }
     }
-  }, []);
+  }, [orderId]);
 
   const whatsappNumber = "212600000000";
   const waMessage = isArabic

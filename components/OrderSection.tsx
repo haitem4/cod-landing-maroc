@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { event as trackFbEvent } from "@/lib/fpixel";
 import {
   Check,
   Truck,
@@ -129,6 +130,13 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           localStorage.setItem("stepprs_orders", JSON.stringify(prev));
         } catch (e) {}
       }
+
+      trackFbEvent("InitiateCheckout", {
+        content_name: "Confort Pro Insoles",
+        value: totalAmount,
+        currency: "MAD",
+        num_items: currentOffer.qty,
+      });
 
       router.push(`/confirmation?orderId=${orderId}&lang=${lang}`);
     } catch (err: any) {

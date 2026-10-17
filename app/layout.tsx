@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cairo, Inter } from "next/font/google";
 import "./globals.css";
+import { FacebookPixel } from "@/components/FacebookPixel";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export default function RootLayout({
   return (
     <html lang="ar" className={`${inter.variable} ${cairo.variable}`}>
       <body className="min-h-screen antialiased bg-slate-100 text-slate-900 selection:bg-orange-500 selection:text-white">
+        <FacebookPixel />
         {children}
       </body>
     </html>
