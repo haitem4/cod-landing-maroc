@@ -10,7 +10,7 @@
  *   ou dans les GitHub Secrets de votre repo.
  * -------------------------------------------------------------
  */
-export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID || "";
+export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID || "796261734474935";
 
 // Suivi standard de chaque page vue (PageView)
 export const pageview = () => {
