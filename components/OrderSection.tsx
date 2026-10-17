@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { event as trackFbEvent } from "@/lib/fpixel";
+import { sendOrderToGoogleSheet } from "@/lib/googleSheet";
 import {
   Check,
   Truck,
@@ -129,6 +130,16 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           prev.unshift(orderPayload);
           localStorage.setItem("stepprs_orders", JSON.stringify(prev));
         } catch (e) {}
+      }
+
+      // Envoi de la commande vers Google Sheets
+      try {
+        await Promise.race([
+          sendOrderToGoogleSheet(orderPayload),
+          new Promise((resolve) => setTimeout(resolve, 1500)),
+        ]);
+      } catch (sheetErr) {
+        console.error("Sheet error:", sheetErr);
       }
 
       trackFbEvent("InitiateCheckout", {

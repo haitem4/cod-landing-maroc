@@ -1,0 +1,78 @@
+/**
+ * Configuration & Envoi vers Google Sheets
+ * -------------------------------------------------------------
+ * Collez l'URL de votre Web App Google Apps Script ci-dessous :
+ * Exemple : "https://script.google.com/macros/s/AKfycbx.../exec"
+ */
+export const GOOGLE_SHEET_WEBAPP_URL =
+  process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL || "";
+
+export interface OrderData {
+  id: string;
+  createdAt: string;
+  product: string;
+  color: string;
+  size: string;
+  pack: string;
+  qty: number;
+  unitPrice: number;
+  shippingFee: number;
+  total: number;
+  currency: string;
+  customer: {
+    fullName: string;
+    phone: string;
+    city: string;
+    address: string;
+  };
+}
+
+/**
+ * Envoie la commande vers le Google Sheet via Google Apps Script Web App
+ */
+export async function sendOrderToGoogleSheet(order: OrderData): Promise<boolean> {
+  if (!GOOGLE_SHEET_WEBAPP_URL) {
+    console.warn("GOOGLE_SHEET_WEBAPP_URL n'est pas encore configuré.");
+    return false;
+  }
+
+  try {
+    const payload = {
+      orderId: order.id,
+      date: new Date().toLocaleString("fr-FR", {
+        timeZone: "Africa/Casablanca",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      customerName: order.customer.fullName,
+      phone: order.customer.phone,
+      city: order.customer.city,
+      address: order.customer.address,
+      product: order.product,
+      pack: order.pack,
+      color: order.color,
+      size: order.size,
+      qty: order.qty,
+      total: `${order.total} ${order.currency}`,
+      status: "🟡 Nouveau",
+    };
+
+    // Note: Utilisation de no-cors car Google Apps Script redirige (302) vers script.googleusercontent.com
+    await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    return true;
+  } catch (err) {
+    console.error("Erreur lors de l'envoi vers Google Sheets:", err);
+    return false;
+  }
+}
