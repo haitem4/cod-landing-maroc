@@ -233,6 +233,7 @@ export default function AdminOrdersPage() {
   const [selectedStatusTab, setSelectedStatusTab] = useState("Tous");
   const [selectedCity, setSelectedCity] = useState("Toutes les villes");
   const [activeOrderModal, setActiveOrderModal] = useState<OrderItem | null>(null);
+  const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -649,18 +650,19 @@ export default function AdminOrdersPage() {
 
         {/* 5. HARMONIOUS ORDERS TABLE (Clean Notion/Shopify Design) */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Table déroulant avec en-têtes figés */}
+          <div className="overflow-x-auto max-h-[600px] overflow-y-auto relative">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
-              <thead>
-                <tr className="bg-slate-50/90 text-slate-500 font-bold border-b border-slate-200/80 text-[11px] uppercase tracking-wider">
+              <thead className="sticky top-0 z-20 bg-slate-50/95 backdrop-blur-md shadow-xs">
+                <tr className="text-slate-600 font-bold border-b border-slate-200 text-[11px] uppercase tracking-wider">
                   <th className="py-3.5 px-4 text-center">Réf.</th>
                   <th className="py-3.5 px-4">Date</th>
                   <th className="py-3.5 px-4">Client & Contact</th>
                   <th className="py-3.5 px-4">Destination</th>
                   <th className="py-3.5 px-4">Pack & Choix</th>
                   <th className="py-3.5 px-4 text-center">Montant</th>
-                  <th className="py-3.5 px-4 text-center min-w-[190px]">
-                    Statut (Déroulant)
+                  <th className="py-3.5 px-4 text-center min-w-[210px]">
+                    Statut (Liste déroulante)
                   </th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
@@ -683,7 +685,7 @@ export default function AdminOrdersPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredOrders.map((ord) => {
+                  filteredOrders.map((ord, index) => {
                     const cfg = STATUS_CONFIG[ord.status] || STATUS_CONFIG["🟡 Nouveau"];
 
                     const waPhone = (ord.customer?.phone || "").replace(/[^0-9]/g, "");
@@ -798,25 +800,74 @@ export default function AdminOrdersPage() {
                           </span>
                         </td>
 
-                        {/* Harmonious Status Dropdown */}
+                        {/* Menu Déroulant interactif directement sur le tableau */}
                         <td className="py-3.5 px-4 text-center">
-                          <div className="relative inline-block w-full max-w-[190px]">
-                            <select
-                              value={ord.status || "🟡 Nouveau"}
-                              onChange={(e) => updateOrderStatus(ord.id, e.target.value)}
-                              className={`w-full appearance-none pl-3 pr-8 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${cfg.bg} ${cfg.text} ${cfg.border} hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-orange-500/20`}
+                          <div className="relative inline-block text-left">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setActiveDropdownId(activeDropdownId === ord.id ? null : ord.id)
+                              }
+                              className={`inline-flex items-center justify-between gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold border shadow-xs transition-all cursor-pointer hover:shadow-sm active:scale-98 ${cfg.bg} ${cfg.text} ${cfg.border}`}
                             >
-                              {STATUS_KEYS.map((k) => (
-                                <option
-                                  key={k}
-                                  value={k}
-                                  className="bg-white text-slate-800 font-medium py-1"
+                              <div className="flex items-center gap-1.5 truncate">
+                                <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
+                                <span>{ord.status || "🟡 Nouveau"}</span>
+                              </div>
+                              <ChevronDown
+                                className={`w-3.5 h-3.5 transition-transform duration-200 opacity-70 ${
+                                  activeDropdownId === ord.id ? "rotate-180" : ""
+                                }`}
+                              />
+                            </button>
+
+                            {/* Menu Déroulant flottant sur le tableau */}
+                            {activeDropdownId === ord.id && (
+                              <>
+                                <div
+                                  className="fixed inset-0 z-30"
+                                  onClick={() => setActiveDropdownId(null)}
+                                />
+                                <div
+                                  className={`absolute left-0 w-52 bg-white rounded-2xl shadow-2xl border border-slate-200/90 py-1.5 z-40 animate-in fade-in zoom-in-95 duration-100 ${
+                                    index >= filteredOrders.length - 2
+                                      ? "bottom-full mb-2"
+                                      : "top-full mt-1.5"
+                                  }`}
                                 >
-                                  {k}
-                                </option>
-                              ))}
-                            </select>
-                            <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
+                                  <div className="px-3 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1">
+                                    Changer le statut
+                                  </div>
+                                  {STATUS_KEYS.map((k) => {
+                                    const itemCfg = STATUS_CONFIG[k];
+                                    const isSelected = (ord.status || "🟡 Nouveau") === k;
+                                    return (
+                                      <button
+                                        key={k}
+                                        type="button"
+                                        onClick={() => {
+                                          updateOrderStatus(ord.id, k);
+                                          setActiveDropdownId(null);
+                                        }}
+                                        className={`w-full px-3 py-2 text-xs font-bold flex items-center justify-between transition-colors cursor-pointer text-left ${
+                                          isSelected
+                                            ? `${itemCfg.bg} ${itemCfg.text}`
+                                            : "hover:bg-slate-50 text-slate-700"
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <span className={`w-2 h-2 rounded-full ${itemCfg.dot}`} />
+                                          <span>{k}</span>
+                                        </div>
+                                        {isSelected && (
+                                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </>
+                            )}
                           </div>
                         </td>
 
