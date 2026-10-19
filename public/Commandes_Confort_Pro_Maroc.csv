@@ -1,0 +1,6 @@
+ID Commande;Date & Heure;Nom du Client;Telephone;Ville;Adresse Complete;Offre / Pack;Couleur;Pointure;Quantite;Prix Total;Statut;Notes & Suivi
+CFP-8491;17/10/2026 21:30;يوسف المنصوري;'0661234567;Casablanca;حي المعاريف، زنقة 14، رقم 25;عرض زوجين (الأكثر طلباً);Orange;EU 41-42;2;279 DH;🟡 Nouveau;A appeler avant 18h
+CFP-7822;17/10/2026 19:15;فاطمة الزهراء العمراني;'0670987654;Rabat;حي أكدال، شارع فال ولد عمير، عمارة 8;عرض 3 أزواج (توفير عائلي);Bleu;EU 39-40;3;359 DH;🔵 Confirmé;Confirmé par tél
+CFP-6219;17/10/2026 14:05;أحمد بنجلون;'0665432109;Marrakech;حي جيليز، قرب مقهى النخيل;عرض زوج واحد;Vert;EU 43-44;1;219 DH;🚚 En cours d'expédition;Expédié avec Ozon Express
+CFP-5140;16/10/2026 18:40;سناء الإدريسي;'0662112233;Tanger;حي مالاباطا، إقامة النور;عرض زوجين;Orange;EU 37-38;2;279 DH;🟢 Livré / Payé;Payé en espèces
+CFP-4910;16/10/2026 11:20;كريم العلمي;'0677889900;Fès;حي النرجس، زنقة فاس الجديد;عرض زوج واحد;Bleu;EU 41-42;1;219 DH;🔴 Annulé;Client injoignable après 3 tentatives

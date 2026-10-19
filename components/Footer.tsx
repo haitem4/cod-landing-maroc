@@ -33,11 +33,16 @@ export const Footer: React.FC<FooterProps> = ({ lang }) => {
           </span>
         </div>
 
-        <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-          {lang === "ar"
-            ? "جميع الحقوق محفوظة © 2026. المتجر الرسمي المعتمد للتسوق الآمن عبر الإنترنت والدفع عند الاستلام بالمغرب."
-            : "All rights reserved © 2026. Official authorized online store with Cash On Delivery & fast shipping across Morocco."}
-        </p>
+        <div className="flex items-center justify-center gap-4 text-[11px] text-slate-500">
+          <span>{lang === "ar" ? "المغرب 🇲🇦 الدفع عند الاستلام" : "Morocco 🇲🇦 Cash On Delivery"}</span>
+          <span>•</span>
+          <a
+            href="./admin"
+            className="hover:text-slate-300 transition underline underline-offset-2"
+          >
+            {lang === "ar" ? "لوحة التحكم (الطلبات)" : "Admin Orders"}
+          </a>
+        </div>
 
         {/* Moroccan trust badges */}
         <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400 font-bold">
