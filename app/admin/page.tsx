@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   Package,
@@ -23,10 +23,17 @@ import {
   ArrowLeft,
   Trash2,
   ExternalLink,
-  Edit,
+  Copy,
+  Check,
+  ChevronDown,
+  Eye,
+  X,
+  FileSpreadsheet,
+  AlertCircle,
+  Sparkles,
 } from "lucide-react";
 
-export interface OrderItem {
+interface OrderItem {
   id: string;
   createdAt: string;
   product: string;
@@ -48,48 +55,74 @@ export interface OrderItem {
   };
 }
 
-const STATUS_LIST = [
-  {
-    id: "🟡 Nouveau",
-    label: "🟡 Nouveau",
-    badgeClass: "bg-amber-100 text-amber-800 border-amber-300",
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; bg: string; text: string; border: string; dot: string; lightBg: string }
+> = {
+  "🟡 Nouveau": {
+    label: "Nouveau",
+    bg: "bg-amber-50",
+    text: "text-amber-800",
+    border: "border-amber-200",
+    dot: "bg-amber-500",
+    lightBg: "bg-amber-500/10",
   },
-  {
-    id: "📞 Contacté",
-    label: "📞 Contacté",
-    badgeClass: "bg-orange-100 text-orange-800 border-orange-300",
+  "📞 Contacté": {
+    label: "Contacté",
+    bg: "bg-orange-50",
+    text: "text-orange-800",
+    border: "border-orange-200",
+    dot: "bg-orange-500",
+    lightBg: "bg-orange-500/10",
   },
-  {
-    id: "🔵 Confirmé",
-    label: "🔵 Confirmé",
-    badgeClass: "bg-blue-100 text-blue-800 border-blue-300",
+  "🔵 Confirmé": {
+    label: "Confirmé",
+    bg: "bg-blue-50",
+    text: "text-blue-800",
+    border: "border-blue-200",
+    dot: "bg-blue-500",
+    lightBg: "bg-blue-500/10",
   },
-  {
-    id: "🚚 En cours d'expédition",
-    label: "🚚 En expédition",
-    badgeClass: "bg-indigo-100 text-indigo-800 border-indigo-300",
+  "🚚 En cours d'expédition": {
+    label: "En expédition",
+    bg: "bg-indigo-50",
+    text: "text-indigo-800",
+    border: "border-indigo-200",
+    dot: "bg-indigo-500",
+    lightBg: "bg-indigo-500/10",
   },
-  {
-    id: "🟢 Livré / Payé",
-    label: "🟢 Livré / Payé",
-    badgeClass: "bg-emerald-100 text-emerald-800 border-emerald-300",
+  "🟢 Livré / Payé": {
+    label: "Livré / Payé",
+    bg: "bg-emerald-50",
+    text: "text-emerald-800",
+    border: "border-emerald-200",
+    dot: "bg-emerald-500",
+    lightBg: "bg-emerald-500/10",
   },
-  {
-    id: "🔴 Annulé",
-    label: "🔴 Annulé",
-    badgeClass: "bg-rose-100 text-rose-800 border-rose-300",
+  "🔴 Annulé": {
+    label: "Annulé",
+    bg: "bg-rose-50",
+    text: "text-rose-800",
+    border: "border-rose-200",
+    dot: "bg-rose-500",
+    lightBg: "bg-rose-500/10",
   },
-  {
-    id: "🔁 Retour",
-    label: "🔁 Retour",
-    badgeClass: "bg-slate-200 text-slate-800 border-slate-300",
+  "🔁 Retour": {
+    label: "Retour",
+    bg: "bg-slate-100",
+    text: "text-slate-700",
+    border: "border-slate-200",
+    dot: "bg-slate-500",
+    lightBg: "bg-slate-500/10",
   },
-];
+};
+
+const STATUS_KEYS = Object.keys(STATUS_CONFIG);
 
 const INITIAL_DEMO_ORDERS: OrderItem[] = [
   {
     id: "CFP-8491",
-    createdAt: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
     product: "فرشات التدليك الطبية (Confort Pro)",
     color: "orange",
     size: "EU 41-42",
@@ -100,16 +133,17 @@ const INITIAL_DEMO_ORDERS: OrderItem[] = [
     total: 279,
     currency: "DH",
     status: "🟡 Nouveau",
+    notes: "Le client souhaite une livraison avant 18h",
     customer: {
       fullName: "يوسف المنصوري",
       phone: "0661234567",
       city: "Casablanca",
-      address: "حي المعاريف، زنقة 14، رقم 25",
+      address: "حي المعاريف، زنقة 14، عمارة الأمل، رقم 25",
     },
   },
   {
     id: "CFP-7822",
-    createdAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 150).toISOString(),
     product: "فرشات التدليك الطبية (Confort Pro)",
     color: "blue",
     size: "EU 39-40",
@@ -120,16 +154,17 @@ const INITIAL_DEMO_ORDERS: OrderItem[] = [
     total: 359,
     currency: "DH",
     status: "🔵 Confirmé",
+    notes: "Confirmé par appel, expédition ce matin",
     customer: {
       fullName: "فاطمة الزهراء العمراني",
       phone: "0670987654",
       city: "Rabat",
-      address: "حي أكدال، شارع فال ولد عمير، عمارة 8",
+      address: "حي أكدال، شارع فال ولد عمير، إقامة السلام",
     },
   },
   {
     id: "CFP-6219",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
     product: "فرشات التدليك الطبية (Confort Pro)",
     color: "green",
     size: "EU 43-44",
@@ -140,11 +175,54 @@ const INITIAL_DEMO_ORDERS: OrderItem[] = [
     total: 219,
     currency: "DH",
     status: "🚚 En cours d'expédition",
+    notes: "Numéro de suivi Ozon Express: OZ-98412",
     customer: {
       fullName: "أحمد بنجلون",
       phone: "0665432109",
       city: "Marrakech",
-      address: "حي جيليز، قرب مقهى النخيل",
+      address: "حي جيليز، قرب مقهى النخيل، زنقة طارق",
+    },
+  },
+  {
+    id: "CFP-5140",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+    product: "فرشات التدليك الطبية (Confort Pro)",
+    color: "orange",
+    size: "EU 37-38",
+    pack: "عرض زوجين",
+    qty: 2,
+    unitPrice: 279,
+    shippingFee: 0,
+    total: 279,
+    currency: "DH",
+    status: "🟢 Livré / Payé",
+    notes: "Livré avec succès et encaissé en espèces",
+    customer: {
+      fullName: "سناء الإدريسي",
+      phone: "0662112233",
+      city: "Tanger",
+      address: "حي مالاباطا، مجمع النور، عمارة B",
+    },
+  },
+  {
+    id: "CFP-4910",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 36).toISOString(),
+    product: "فرشات التدليك الطبية (Confort Pro)",
+    color: "blue",
+    size: "EU 41-42",
+    pack: "عرض زوج واحد",
+    qty: 1,
+    unitPrice: 199,
+    shippingFee: 20,
+    total: 219,
+    currency: "DH",
+    status: "🔴 Annulé",
+    notes: "Client injoignable après 3 appels",
+    customer: {
+      fullName: "كريم العلمي",
+      phone: "0677889900",
+      city: "Fès",
+      address: "حي النرجس، شارع القدس",
     },
   },
 ];
@@ -152,10 +230,13 @@ const INITIAL_DEMO_ORDERS: OrderItem[] = [
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatusFilter, setSelectedStatusFilter] = useState("Tous");
+  const [selectedStatusTab, setSelectedStatusTab] = useState("Tous");
+  const [selectedCity, setSelectedCity] = useState("Toutes les villes");
+  const [activeOrderModal, setActiveOrderModal] = useState<OrderItem | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Charger les commandes depuis le localStorage
+  // Charger depuis le localStorage ou initialiser
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
@@ -178,14 +259,14 @@ export default function AdminOrdersPage() {
           localStorage.setItem("stepprs_orders", JSON.stringify(INITIAL_DEMO_ORDERS));
         }
       } catch (err) {
-        console.error("Erreur lecture commandes:", err);
+        console.error(err);
         setOrders(INITIAL_DEMO_ORDERS);
       }
       setIsLoaded(true);
     }
   }, []);
 
-  // Sauvegarder les modifications
+  // Mettre à jour le statut d'une commande
   const updateOrderStatus = (orderId: string, newStatus: string) => {
     setOrders((prev) => {
       const updated = prev.map((ord) =>
@@ -194,10 +275,27 @@ export default function AdminOrdersPage() {
       if (typeof window !== "undefined") {
         localStorage.setItem("stepprs_orders", JSON.stringify(updated));
       }
+      if (activeOrderModal && activeOrderModal.id === orderId) {
+        setActiveOrderModal((curr) => (curr ? { ...curr, status: newStatus } : null));
+      }
       return updated;
     });
   };
 
+  // Mettre à jour les notes
+  const updateOrderNotes = (orderId: string, notes: string) => {
+    setOrders((prev) => {
+      const updated = prev.map((ord) =>
+        ord.id === orderId ? { ...ord, notes } : ord
+      );
+      if (typeof window !== "undefined") {
+        localStorage.setItem("stepprs_orders", JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
+  // Supprimer une commande
   const deleteOrder = (orderId: string) => {
     if (confirm(`Confirmez-vous la suppression de la commande #${orderId} ?`)) {
       setOrders((prev) => {
@@ -207,10 +305,21 @@ export default function AdminOrdersPage() {
         }
         return updated;
       });
+      if (activeOrderModal?.id === orderId) {
+        setActiveOrderModal(null);
+      }
     }
   };
 
-  // Export CSV compatible Excel et Google Sheets
+  // Copier le récapitulatif pour le livreur
+  const copyForDelivery = (order: OrderItem) => {
+    const text = `📦 COMMANDE #${order.id}\n👤 Client : ${order.customer?.fullName}\n📞 Tél : ${order.customer?.phone}\n📍 Ville : ${order.customer?.city}\n🏠 Adresse : ${order.customer?.address}\n👟 Produit : ${order.pack} (${order.color}, ${order.size})\n💰 Montant à encaisser : ${order.total} DH`;
+    navigator.clipboard.writeText(text);
+    setCopiedId(order.id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  // Export CSV compatible Excel & Google Sheets
   const exportToCSV = () => {
     if (orders.length === 0) {
       alert("Aucune commande à exporter.");
@@ -230,13 +339,14 @@ export default function AdminOrdersPage() {
       "Quantite",
       "Prix Total (DH)",
       "Statut",
+      "Notes & Suivi",
     ];
 
     const rows = orders.map((o) => [
       `"${o.id}"`,
       `"${new Date(o.createdAt).toLocaleString("fr-FR", { timeZone: "Africa/Casablanca" })}"`,
       `"${(o.customer?.fullName || "").replace(/"/g, '""')}"`,
-      `"'${o.customer?.phone || ""}"`, // apostrophe pour préserver le 0
+      `"'${o.customer?.phone || ""}"`,
       `"${(o.customer?.city || "").replace(/"/g, '""')}"`,
       `"${(o.customer?.address || "").replace(/"/g, '""')}"`,
       `"${(o.pack || "").replace(/"/g, '""')}"`,
@@ -245,10 +355,11 @@ export default function AdminOrdersPage() {
       `"${o.qty || 1}"`,
       `"${o.total || ""}"`,
       `"${o.status || "🟡 Nouveau"}"`,
+      `"${(o.notes || "").replace(/"/g, '""')}"`,
     ]);
 
     const csvContent =
-      "\uFEFF" + // BOM pour forcer UTF-8 dans Excel
+      "\uFEFF" +
       [headers.join(";"), ...rows.map((e) => e.join(";"))].join("\r\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -264,313 +375,485 @@ export default function AdminOrdersPage() {
     document.body.removeChild(link);
   };
 
-  // Statistiques
-  const totalRevenue = orders.reduce((sum, ord) => sum + (Number(ord.total) || 0), 0);
-  const confirmedCount = orders.filter((o) => o.status === "🔵 Confirmé").length;
-  const deliveredCount = orders.filter((o) => o.status === "🟢 Livré / Payé").length;
+  // Liste des villes uniques
+  const citiesList = useMemo(() => {
+    const set = new Set<string>();
+    orders.forEach((o) => {
+      if (o.customer?.city) set.add(o.customer.city);
+    });
+    return ["Toutes les villes", ...Array.from(set)];
+  }, [orders]);
 
   // Filtrage
-  const filteredOrders = orders.filter((ord) => {
-    const matchesSearch =
-      (ord.customer?.fullName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (ord.customer?.phone || "").includes(searchQuery) ||
-      (ord.customer?.city || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ord.id.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredOrders = useMemo(() => {
+    return orders.filter((ord) => {
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        (ord.customer?.fullName || "").toLowerCase().includes(q) ||
+        (ord.customer?.phone || "").includes(q) ||
+        (ord.customer?.city || "").toLowerCase().includes(q) ||
+        ord.id.toLowerCase().includes(q);
 
-    const matchesStatus =
-      selectedStatusFilter === "Tous" || ord.status === selectedStatusFilter;
+      const matchesStatus =
+        selectedStatusTab === "Tous" || ord.status === selectedStatusTab;
 
-    return matchesSearch && matchesStatus;
-  });
+      const matchesCity =
+        selectedCity === "Toutes les villes" || ord.customer?.city === selectedCity;
+
+      return matchesSearch && matchesStatus && matchesCity;
+    });
+  }, [orders, searchQuery, selectedStatusTab, selectedCity]);
+
+  // Statistiques calculées
+  const totalRevenue = useMemo(
+    () => orders.reduce((sum, ord) => sum + (Number(ord.total) || 0), 0),
+    [orders]
+  );
+  const countNew = orders.filter((o) => (o.status || "").includes("Nouveau")).length;
+  const countConfirmed = orders.filter((o) => (o.status || "").includes("Confirmé")).length;
+  const countDelivered = orders.filter((o) => (o.status || "").includes("Livré")).length;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 selection:bg-orange-600 selection:text-white p-4 sm:p-6 lg:p-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* HEADER BAR */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-800/90 border border-slate-700/80 p-5 rounded-3xl shadow-xl backdrop-blur-md">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 font-sans selection:bg-orange-500 selection:text-white">
+      {/* 1. TOP EXECUTIVE HEADER */}
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+          {/* Brand info */}
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="p-2.5 bg-slate-700/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-2xl transition"
-              title="Retour au site"
+              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 rounded-xl transition-all"
+              title="Retour à la boutique"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                  Système En Direct
-                </span>
+
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-600 to-amber-500 text-white font-black text-lg flex items-center justify-center shadow-md shadow-orange-500/20">
+                C
               </div>
-              <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                Tableau de Bord des Commandes
-              </h1>
-              <p className="text-xs text-slate-400">
-                Gestion COD Maroc • Confort Pro (Stepprs)
-              </p>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                    CONFORT PRO
+                  </h1>
+                  <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-orange-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full">
+                    <span>🇲🇦 COD Maroc</span>
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">
+                  Tableau de bord et gestion des commandes
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          {/* Right Header Controls */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200/80">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>En direct</span>
+            </div>
+
             <button
               onClick={exportToCSV}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white rounded-2xl font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/25 transition cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
             >
-              <Download className="w-4 h-4" />
-              <span>Exporter vers Excel / Sheets</span>
+              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+              <span>Exporter Excel</span>
             </button>
+
             <Link
               href="/"
               target="_blank"
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-slate-700/80 hover:bg-slate-700 text-slate-200 rounded-2xl font-bold text-xs transition"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-all"
             >
               <ExternalLink className="w-4 h-4" />
-              <span className="hidden md:inline">Voir la boutique</span>
+              <span>Boutique</span>
             </Link>
           </div>
         </div>
+      </header>
 
-        {/* STATS CARDS */}
+      {/* 2. MAIN CONTAINER */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+        {/* KPI METRICS ROW (Harmonious Cards) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="bg-slate-800/70 border border-slate-700/70 rounded-3xl p-4 sm:p-5">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider">
+          {/* Total Orders */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Total Commandes
               </span>
-              <Package className="w-5 h-5 text-orange-400" />
+              <div className="w-9 h-9 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                <Package className="w-5 h-5" />
+              </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {orders.length}
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-slate-900">
+                {orders.length}
+              </span>
+              <span className="text-xs font-semibold text-slate-500">commandes</span>
             </div>
-            <span className="text-[11px] text-slate-400">Toutes les soumissions</span>
           </div>
 
-          <div className="bg-slate-800/70 border border-slate-700/70 rounded-3xl p-4 sm:p-5">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider">
+          {/* Revenue */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Chiffre d&apos;Affaires
               </span>
-              <DollarSign className="w-5 h-5 text-emerald-400" />
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <DollarSign className="w-5 h-5" />
+              </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-400">
-              {totalRevenue} <span className="text-sm font-bold text-slate-300">DH</span>
-            </div>
-            <span className="text-[11px] text-slate-400">Montant total brut</span>
-          </div>
-
-          <div className="bg-slate-800/70 border border-slate-700/70 rounded-3xl p-4 sm:p-5">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider">
-                Confirmées
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-2xl sm:text-3xl font-black text-emerald-600">
+                {totalRevenue.toLocaleString()}
               </span>
-              <CheckCircle2 className="w-5 h-5 text-blue-400" />
+              <span className="text-xs font-bold text-slate-500">DH</span>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-blue-400">
-              {confirmedCount}
-            </div>
-            <span className="text-[11px] text-slate-400">Prêtes pour la livraison</span>
           </div>
 
-          <div className="bg-slate-800/70 border border-slate-700/70 rounded-3xl p-4 sm:p-5">
-            <div className="flex items-center justify-between text-slate-400 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider">
+          {/* Pending / New */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                À Confirmer (Nouveaux)
+              </span>
+              <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                <Clock className="w-5 h-5" />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-amber-600">
+                {countNew}
+              </span>
+              <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
+                Priorité
+              </span>
+            </div>
+          </div>
+
+          {/* Delivered & Confirmed */}
+          <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Livrées / Encaissées
               </span>
-              <Truck className="w-5 h-5 text-emerald-400" />
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <Truck className="w-5 h-5" />
+              </div>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-emerald-300">
-              {deliveredCount}
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl sm:text-3xl font-black text-indigo-600">
+                {countDelivered}
+              </span>
+              <span className="text-xs font-semibold text-slate-500">
+                ({countConfirmed} confirmées)
+              </span>
             </div>
-            <span className="text-[11px] text-slate-400">Livraison réussie</span>
           </div>
         </div>
 
-        {/* SEARCH AND FILTERS */}
-        <div className="bg-slate-800/70 border border-slate-700/70 rounded-3xl p-4 flex flex-col md:flex-row items-center gap-3">
+        {/* 3. STATUS TABS FILTER (Harmonious horizontal scrollable pills) */}
+        <div className="bg-white rounded-2xl p-2 border border-slate-200/80 shadow-xs flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <button
+            onClick={() => setSelectedStatusTab("Tous")}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+              selectedStatusTab === "Tous"
+                ? "bg-slate-900 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+            }`}
+          >
+            <span>Toutes</span>
+            <span
+              className={`text-[11px] px-1.5 py-0.2 rounded-md ${
+                selectedStatusTab === "Tous"
+                  ? "bg-white/20 text-white"
+                  : "bg-slate-200 text-slate-700"
+              }`}
+            >
+              {orders.length}
+            </span>
+          </button>
+
+          {STATUS_KEYS.map((key) => {
+            const cfg = STATUS_CONFIG[key];
+            const isSelected = selectedStatusTab === key;
+            const count = orders.filter((o) => (o.status || "🟡 Nouveau") === key).length;
+
+            return (
+              <button
+                key={key}
+                onClick={() => setSelectedStatusTab(key)}
+                className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+                  isSelected
+                    ? `${cfg.bg} ${cfg.text} ${cfg.border} border shadow-xs`
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
+                <span>{cfg.label}</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-md font-bold ${
+                    isSelected ? "bg-white/80" : "bg-slate-100 text-slate-500"
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 4. SEARCH & SECONDARY FILTERS BAR */}
+        <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-center gap-3">
+          {/* Search Input */}
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher par nom, téléphone, ville ou #ID..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-2xl py-2.5 pl-10 pr-4 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition"
+              placeholder="Rechercher par nom, téléphone (ex: 06...), ville ou #ID..."
+              className="w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 rounded-xl py-2 pl-10 pr-9 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-3 focus:ring-orange-500/10 transition"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-            <Filter className="w-4 h-4 text-slate-400 shrink-0 ml-1" />
+          {/* City Filter */}
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <MapPin className="w-4 h-4 text-slate-400 shrink-0 hidden sm:block" />
             <select
-              value={selectedStatusFilter}
-              onChange={(e) => setSelectedStatusFilter(e.target.value)}
-              className="bg-slate-900 border border-slate-700 text-xs sm:text-sm font-bold text-slate-200 rounded-2xl px-3 py-2.5 focus:outline-none focus:border-orange-500 cursor-pointer"
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className="w-full md:w-auto bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-700 rounded-xl px-3 py-2 focus:outline-none focus:border-orange-500 cursor-pointer"
             >
-              <option value="Tous">Tous les statuts ({orders.length})</option>
-              {STATUS_LIST.map((st) => (
-                <option key={st.id} value={st.id}>
-                  {st.label} (
-                  {orders.filter((o) => (o.status || "🟡 Nouveau") === st.id).length})
+              {citiesList.map((c) => (
+                <option key={c} value={c}>
+                  {c}
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* ORDERS TABLE - SPREADSHEET LOOK */}
-        <div className="bg-slate-800/80 border border-slate-700/80 rounded-3xl overflow-hidden shadow-2xl">
+        {/* 5. HARMONIOUS ORDERS TABLE (Clean Notion/Shopify Design) */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm border-collapse">
               <thead>
-                <tr className="bg-slate-950/90 text-slate-300 font-black border-b border-slate-700 uppercase tracking-wider text-[11px]">
-                  <th className="py-3.5 px-4 text-center">ID</th>
+                <tr className="bg-slate-50/90 text-slate-500 font-bold border-b border-slate-200/80 text-[11px] uppercase tracking-wider">
+                  <th className="py-3.5 px-4 text-center">Réf.</th>
                   <th className="py-3.5 px-4">Date</th>
-                  <th className="py-3.5 px-4">Client</th>
-                  <th className="py-3.5 px-4">Téléphone</th>
-                  <th className="py-3.5 px-4">Ville & Adresse</th>
-                  <th className="py-3.5 px-4">Pack & Options</th>
-                  <th className="py-3.5 px-4 text-center">Total</th>
-                  <th className="py-3.5 px-4 text-center min-w-[200px]">
-                    Statut (Liste déroulante)
+                  <th className="py-3.5 px-4">Client & Contact</th>
+                  <th className="py-3.5 px-4">Destination</th>
+                  <th className="py-3.5 px-4">Pack & Choix</th>
+                  <th className="py-3.5 px-4 text-center">Montant</th>
+                  <th className="py-3.5 px-4 text-center min-w-[190px]">
+                    Statut (Déroulant)
                   </th>
-                  <th className="py-3.5 px-4 text-center">Action</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700/60 font-medium">
+              <tbody className="divide-y divide-slate-100 font-medium">
                 {filteredOrders.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={9}
-                      className="py-12 text-center text-slate-400 text-sm font-bold"
-                    >
-                      Aucune commande trouvée.
+                    <td colSpan={8} className="py-16 text-center">
+                      <div className="max-w-xs mx-auto space-y-2">
+                        <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
+                          <Search className="w-6 h-6" />
+                        </div>
+                        <p className="text-sm font-bold text-slate-700">
+                          Aucune commande ne correspond
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Essayez de réinitialiser la recherche ou le filtre de statut.
+                        </p>
+                      </div>
                     </td>
                   </tr>
                 ) : (
                   filteredOrders.map((ord) => {
-                    const statusObj =
-                      STATUS_LIST.find((s) => s.id === ord.status) || STATUS_LIST[0];
+                    const cfg = STATUS_CONFIG[ord.status] || STATUS_CONFIG["🟡 Nouveau"];
 
                     const waPhone = (ord.customer?.phone || "").replace(/[^0-9]/g, "");
                     const waInternational = waPhone.startsWith("0")
                       ? "212" + waPhone.slice(1)
                       : waPhone;
                     const waText = encodeURIComponent(
-                      `السلام عليكم أخي / أختي ${ord.customer?.fullName || ""}. معكم مصلحة الزبناء بخصوص طلبكم رقم #${ord.id} لفرشات التدليك الطبية Confort Pro. المرجو تأكيد العنوان وموعد التوصيل.`
+                      `السلام عليكم أخي / أختي ${ord.customer?.fullName || ""}. معكم مصلحة الزبناء بخصوص طلبكم رقم #${ord.id} لفرشات التدليك الطبية Confort Pro Maroc. المرجو تأكيد العنوان وموعد التوصيل المناسب لكم.`
                     );
                     const waLink = `https://wa.me/${waInternational}?text=${waText}`;
+
+                    const isCopied = copiedId === ord.id;
 
                     return (
                       <tr
                         key={ord.id}
-                        className="hover:bg-slate-700/30 transition-colors group"
+                        className="hover:bg-slate-50/70 transition-colors group"
                       >
                         {/* ID */}
-                        <td className="py-3 px-4 text-center font-mono font-bold text-orange-400">
-                          {ord.id}
+                        <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                          <button
+                            onClick={() => setActiveOrderModal(ord)}
+                            className="font-mono text-xs font-bold text-orange-600 hover:text-orange-700 hover:underline cursor-pointer"
+                          >
+                            #{ord.id}
+                          </button>
                         </td>
 
                         {/* Date */}
-                        <td className="py-3 px-4 text-slate-400 whitespace-nowrap text-xs">
-                          {new Date(ord.createdAt).toLocaleDateString("fr-FR", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          })}
-                          <br />
-                          <span className="text-[10px] text-slate-500">
+                        <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap text-xs">
+                          <div className="font-semibold text-slate-700">
+                            {new Date(ord.createdAt).toLocaleDateString("fr-FR", {
+                              day: "2-digit",
+                              month: "short",
+                            })}
+                          </div>
+                          <div className="text-[11px] text-slate-400">
                             {new Date(ord.createdAt).toLocaleTimeString("fr-FR", {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
-                          </span>
-                        </td>
-
-                        {/* Customer */}
-                        <td className="py-3 px-4 font-bold text-white whitespace-nowrap">
-                          {ord.customer?.fullName || "—"}
-                        </td>
-
-                        {/* Phone with WhatsApp and Call buttons */}
-                        <td className="py-3 px-4 whitespace-nowrap">
-                          <div className="flex items-center gap-1.5 font-mono text-slate-200">
-                            <span>{ord.customer?.phone || "—"}</span>
-                            {ord.customer?.phone && (
-                              <div className="flex items-center gap-1 ml-1">
-                                <a
-                                  href={`tel:${ord.customer.phone}`}
-                                  className="p-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white transition"
-                                  title="Appeler"
-                                >
-                                  <Phone className="w-3.5 h-3.5" />
-                                </a>
-                                <a
-                                  href={waLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="p-1 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 text-emerald-400 hover:text-white transition"
-                                  title="Ouvrir WhatsApp"
-                                >
-                                  <MessageCircle className="w-3.5 h-3.5" />
-                                </a>
-                              </div>
-                            )}
                           </div>
                         </td>
 
-                        {/* City & Address */}
-                        <td className="py-3 px-4 max-w-xs text-xs">
-                          <span className="font-bold text-amber-300">
+                        {/* Customer & Quick Contacts */}
+                        <td className="py-3.5 px-4">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-slate-900">
+                              {ord.customer?.fullName || "Client anonyme"}
+                            </span>
+                            <div className="flex items-center gap-1.5 mt-1">
+                              <span className="font-mono text-xs text-slate-600">
+                                {ord.customer?.phone || "—"}
+                              </span>
+
+                              {ord.customer?.phone && (
+                                <div className="flex items-center gap-1 ml-1">
+                                  {/* Call button */}
+                                  <a
+                                    href={`tel:${ord.customer.phone}`}
+                                    className="p-1 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition"
+                                    title="Appeler"
+                                  >
+                                    <Phone className="w-3.5 h-3.5" />
+                                  </a>
+
+                                  {/* WhatsApp button */}
+                                  <a
+                                    href={waLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-1 rounded-md text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition"
+                                    title="Contacter sur WhatsApp"
+                                  >
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                  </a>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Destination */}
+                        <td className="py-3.5 px-4 max-w-xs text-xs">
+                          <span className="inline-block font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-md mb-0.5">
                             {ord.customer?.city || "—"}
                           </span>
-                          <p className="text-slate-400 truncate">
+                          <p className="text-slate-500 truncate" title={ord.customer?.address}>
                             {ord.customer?.address || "—"}
                           </p>
                         </td>
 
-                        {/* Product details */}
-                        <td className="py-3 px-4 text-xs whitespace-nowrap">
-                          <span className="font-bold text-white">{ord.pack}</span>
-                          <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
-                            <span className="capitalize">Couleur: {ord.color}</span>
+                        {/* Product Choices */}
+                        <td className="py-3.5 px-4 text-xs whitespace-nowrap">
+                          <span className="font-semibold text-slate-900 block">
+                            {ord.pack}
+                          </span>
+                          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-0.5">
+                            <span className="capitalize">{ord.color}</span>
                             <span>•</span>
-                            <span>{ord.size}</span>
+                            <span className="font-semibold text-slate-700">{ord.size}</span>
                           </div>
                         </td>
 
-                        {/* Total */}
-                        <td className="py-3 px-4 text-center font-black text-emerald-400 whitespace-nowrap">
-                          {ord.total} DH
+                        {/* Amount */}
+                        <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                          <span className="font-black text-slate-900 text-sm">
+                            {ord.total}
+                          </span>
+                          <span className="text-[11px] text-slate-500 font-bold ml-1">
+                            DH
+                          </span>
                         </td>
 
-                        {/* Status Select with exact requested colors */}
-                        <td className="py-3 px-4 text-center">
-                          <select
-                            value={ord.status || "🟡 Nouveau"}
-                            onChange={(e) => updateOrderStatus(ord.id, e.target.value)}
-                            className={`w-full py-1.5 px-3 rounded-xl font-bold text-xs border-2 shadow-sm focus:outline-none transition-all cursor-pointer ${statusObj.badgeClass}`}
-                          >
-                            {STATUS_LIST.map((s) => (
-                              <option
-                                key={s.id}
-                                value={s.id}
-                                className="bg-slate-900 text-white font-medium py-1"
-                              >
-                                {s.label}
-                              </option>
-                            ))}
-                          </select>
+                        {/* Harmonious Status Dropdown */}
+                        <td className="py-3.5 px-4 text-center">
+                          <div className="relative inline-block w-full max-w-[190px]">
+                            <select
+                              value={ord.status || "🟡 Nouveau"}
+                              onChange={(e) => updateOrderStatus(ord.id, e.target.value)}
+                              className={`w-full appearance-none pl-3 pr-8 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${cfg.bg} ${cfg.text} ${cfg.border} hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-orange-500/20`}
+                            >
+                              {STATUS_KEYS.map((k) => (
+                                <option
+                                  key={k}
+                                  value={k}
+                                  className="bg-white text-slate-800 font-medium py-1"
+                                >
+                                  {k}
+                                </option>
+                              ))}
+                            </select>
+                            <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
+                          </div>
                         </td>
 
-                        {/* Delete action */}
-                        <td className="py-3 px-4 text-center">
-                          <button
-                            onClick={() => deleteOrder(ord.id)}
-                            className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition"
-                            title="Supprimer la commande"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                        {/* Actions */}
+                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1">
+                            {/* Copy delivery info */}
+                            <button
+                              onClick={() => copyForDelivery(ord)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                              title="Copier les infos pour le livreur"
+                            >
+                              {isCopied ? (
+                                <Check className="w-4 h-4 text-emerald-600" />
+                              ) : (
+                                <Copy className="w-4 h-4" />
+                              )}
+                            </button>
+
+                            {/* View modal */}
+                            <button
+                              onClick={() => setActiveOrderModal(ord)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition"
+                              title="Voir les détails complets"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+
+                            {/* Delete */}
+                            <button
+                              onClick={() => deleteOrder(ord.id)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                              title="Supprimer la commande"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -580,17 +863,167 @@ export default function AdminOrdersPage() {
             </table>
           </div>
 
-          {/* TABLE FOOTER */}
-          <div className="bg-slate-950/70 p-4 border-t border-slate-700/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-2">
+          {/* Table Bottom info bar */}
+          <div className="bg-slate-50/70 p-3.5 px-4 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
             <span>
-              Affichage de {filteredOrders.length} sur {orders.length} commande(s)
+              Affichage de <strong className="text-slate-700">{filteredOrders.length}</strong> sur{" "}
+              <strong className="text-slate-700">{orders.length}</strong> commande(s)
             </span>
-            <span className="flex items-center gap-1.5">
-              <span>💡 Cliquez sur la liste déroulante pour changer la couleur et l&apos;état</span>
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Toutes les modifications sont automatiquement sauvegardées</span>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
+
+      {/* 6. MODAL DÉTAILS DE COMMANDE & FICHE LIVREUR */}
+      {activeOrderModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div>
+                <span className="text-xs font-bold text-orange-600">
+                  Détails Commande COD
+                </span>
+                <h3 className="text-lg font-black text-slate-900">
+                  #{activeOrderModal.id}
+                </h3>
+              </div>
+              <button
+                onClick={() => setActiveOrderModal(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-5 text-xs sm:text-sm">
+              {/* Customer Card */}
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 space-y-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                  Informations Client
+                </span>
+                <div className="grid grid-cols-2 gap-2 text-slate-700">
+                  <div>
+                    <span className="text-slate-400 block text-[11px]">Nom :</span>
+                    <strong className="text-slate-900">{activeOrderModal.customer?.fullName}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[11px]">Téléphone :</span>
+                    <strong className="text-slate-900 font-mono">
+                      {activeOrderModal.customer?.phone}
+                    </strong>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-slate-400 block text-[11px]">Ville & Adresse :</span>
+                    <p className="text-slate-900 font-medium">
+                      <span className="font-bold text-orange-600">
+                        {activeOrderModal.customer?.city}
+                      </span>{" "}
+                      • {activeOrderModal.customer?.address}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Items */}
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 space-y-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                  Contenu du Colis
+                </span>
+                <div className="flex justify-between items-center text-slate-900 font-medium">
+                  <div>
+                    <p className="font-bold">{activeOrderModal.pack}</p>
+                    <p className="text-xs text-slate-500">
+                      Couleur: {activeOrderModal.color} • Pointure: {activeOrderModal.size}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-base font-black text-emerald-600">
+                      {activeOrderModal.total} DH
+                    </span>
+                    <span className="text-[11px] text-slate-400 block">
+                      Livraison: {activeOrderModal.shippingFee === 0 ? "Gratuite" : "20 DH"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status and Notes */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-700 block">
+                  Statut de la commande
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {STATUS_KEYS.map((k) => {
+                    const cfg = STATUS_CONFIG[k];
+                    const isSelected = activeOrderModal.status === k;
+                    return (
+                      <button
+                        key={k}
+                        type="button"
+                        onClick={() => updateOrderStatus(activeOrderModal.id, k)}
+                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all text-left flex items-center gap-2 cursor-pointer ${
+                          isSelected
+                            ? `${cfg.bg} ${cfg.text} ${cfg.border} ring-2 ring-orange-500/20`
+                            : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
+                        <span className="truncate">{cfg.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Internal Notes */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 block">
+                  Notes internes & Suivi colis
+                </label>
+                <textarea
+                  rows={2}
+                  value={activeOrderModal.notes || ""}
+                  onChange={(e) => updateOrderNotes(activeOrderModal.id, e.target.value)}
+                  placeholder="Ajouter une remarque (ex: rappeler à 18h, code suivi Ozon...)"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none focus:border-orange-500 focus:bg-white transition"
+                />
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
+              <button
+                onClick={() => copyForDelivery(activeOrderModal)}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs shadow-sm transition"
+              >
+                {copiedId === activeOrderModal.id ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>Copié pour le livreur !</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span>Copier la fiche livreur</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={() => setActiveOrderModal(null)}
+                className="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold text-xs transition"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
