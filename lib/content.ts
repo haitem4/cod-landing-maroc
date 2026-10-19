@@ -208,13 +208,14 @@ export const CONTENT = {
 
     // Payment methods
     paymentMethodTitle: "اختر طريقة الدفع الآمنة :",
-    stripeCardTab: "بطاقة بنكية (Stripe)",
+    stripeCardTab: "بطاقة بنكية (Carte Bancaire / فيزا / ماستركارد)",
     paypalTab: "باي بال (PayPal)",
     codTab: "الدفع عند الاستلام (COD بالمغرب)",
-    cardNumberLabel: "رقم البطاقة الائتمانية *",
+    cardNumberLabel: "رقم البطاقة البنكية *",
     cardExpiryLabel: "تاريخ الانتهاء (MM/YY) *",
     cardCvcLabel: "رمز الأمان (CVC) *",
     cardHolderLabel: "اسم صاحب البطاقة كما هو مكتوب *",
+    cardBanksNotice: "تقبل جميع البطاقات البنكية المغربية (CIH، التجاري، الشعبي، BMCE...) والدولية (Visa، Mastercard، CB)",
 
     // Security Badges
     securityBadgeSSL: "تشفير بنكي 256-Bit SSL",
@@ -346,13 +347,14 @@ export const CONTENT = {
 
     // Payment methods
     paymentMethodTitle: "Select Secure Payment Method :",
-    stripeCardTab: "Credit / Debit Card (Stripe)",
+    stripeCardTab: "Carte Bancaire / Credit Card (CB, Visa, Mastercard)",
     paypalTab: "PayPal",
     codTab: "Cash on Delivery (Morocco)",
     cardNumberLabel: "Card Number *",
     cardExpiryLabel: "Expiration (MM/YY) *",
     cardCvcLabel: "Security Code (CVC) *",
     cardHolderLabel: "Cardholder Name *",
+    cardBanksNotice: "All Moroccan bank cards (CIH, Attijari, BCP, BMCE...) & international cards (Visa, Mastercard, CB, Amex) accepted",
 
     // Security Badges
     securityBadgeSSL: "256-Bit Bank-Grade SSL Encryption",

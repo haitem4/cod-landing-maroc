@@ -74,7 +74,10 @@ export async function sendOrderToGoogleSheet(order: OrderData): Promise<boolean>
       size: order.size,
       qty: order.qty,
       total: `${order.total} ${order.currency}`,
-      paymentMethod: order.paymentMethod?.toUpperCase() || "COD",
+      paymentMethod:
+        order.paymentMethod?.toLowerCase() === "stripe"
+          ? `CARTE BANCAIRE (${order.cardBrand || "CB"})`
+          : order.paymentMethod?.toUpperCase() || "COD",
       paymentStatus: order.paymentStatus === "paid" ? "🟢 Payé" : "🟡 En attente",
       transactionId: order.transactionId || "",
       status: order.paymentStatus === "paid" ? "🔵 Confirmé" : "🟡 Nouveau",

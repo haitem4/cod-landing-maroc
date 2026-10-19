@@ -734,7 +734,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            {/* Stripe Card Option */}
+            {/* Carte Bancaire Option */}
             <button
               type="button"
               onClick={() => setPaymentMethod("stripe")}
@@ -747,13 +747,14 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               <div className="flex items-center gap-2">
                 <CreditCard className={`w-5 h-5 ${paymentMethod === "stripe" ? "text-orange-600" : "text-slate-600"}`} />
                 <span className="text-xs font-black text-slate-900">
-                  {t.stripeCardTab}
+                  {lang === "ar" ? "بطاقة بنكية (Carte Bancaire)" : "Carte Bancaire / Credit Card"}
                 </span>
               </div>
               <div className="flex items-center gap-1">
+                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">CB</span>
                 <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">VISA</span>
                 <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">MC</span>
-                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-slate-200 text-slate-800">AMEX</span>
+                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-slate-200 text-slate-800">CMI</span>
               </div>
             </button>
 
@@ -803,35 +804,89 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
             </button>
           </div>
 
-          {/* TAB 1: STRIPE CREDIT CARD FORM */}
+          {/* TAB 1: CARTE BANCAIRE INTERACTIVE FORM */}
           {paymentMethod === "stripe" && (
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-orange-50/30 border-2 border-orange-200/80 space-y-3.5 animate-fadeIn">
-              <div className="flex items-center justify-between border-b border-orange-200/60 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span className="text-xs font-black text-slate-900">
-                    {lang === "ar" ? "دفع آمن بالبطاقة البنكية (Stripe PCI-DSS)" : "Secure Credit Card Checkout (Stripe)"}
-                  </span>
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-50 via-white to-orange-50/30 border-2 border-orange-200/80 space-y-4 animate-fadeIn">
+              {/* Virtual Carte Bancaire Visual Mockup */}
+              <div className="w-full max-w-sm mx-auto bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950 text-white rounded-2xl p-4 sm:p-5 shadow-2xl border border-slate-700/60 relative overflow-hidden select-none">
+                {/* Hologram Sheen */}
+                <div className="absolute -top-12 -right-12 w-36 h-36 bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-transparent rounded-full blur-xl pointer-events-none" />
+                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-orange-500/15 rounded-full blur-xl pointer-events-none" />
+
+                <div className="flex items-center justify-between mb-4 relative z-10">
+                  <div className="flex items-center gap-2">
+                    {/* EMV Gold Chip */}
+                    <div className="w-9 h-7 bg-gradient-to-br from-amber-200 via-amber-400 to-amber-500 rounded-md border border-amber-300 shadow-inner flex items-center justify-center relative">
+                      <div className="w-5 h-3.5 border-t border-b border-amber-600/40 rounded-xs" />
+                    </div>
+                    {/* Contactless waves icon */}
+                    <svg className="w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M8.5 16.5a5 5 0 0 1 0-7" strokeLinecap="round" />
+                      <path d="M12 19a8.5 8.5 0 0 0 0-12" strokeLinecap="round" />
+                      <path d="M15.5 21.5a12 12 0 0 0 0-17" strokeLinecap="round" />
+                    </svg>
+                  </div>
+
+                  {/* Card Brand Logo */}
+                  <div className="flex items-center gap-1.5">
+                    {detectedBrand === "visa" && (
+                      <span className="font-black italic text-lg sm:text-xl tracking-wider text-white">VISA</span>
+                    )}
+                    {detectedBrand === "mastercard" && (
+                      <div className="flex items-center -space-x-2">
+                        <div className="w-6 h-6 rounded-full bg-[#EB001B] opacity-90 shadow-xs" />
+                        <div className="w-6 h-6 rounded-full bg-[#F79E1B] opacity-90 shadow-xs" />
+                      </div>
+                    )}
+                    {detectedBrand === "amex" && (
+                      <span className="font-black text-xs px-2 py-0.5 rounded bg-sky-500 text-white tracking-widest">AMEX</span>
+                    )}
+                    {detectedBrand === "unknown" && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-white/20 text-white">CB</span>
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-white/20 text-white">VISA</span>
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-white/20 text-white">MC</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded transition-all ${
-                    detectedBrand === "visa" ? "bg-blue-600 text-white shadow-xs" : "bg-slate-200 text-slate-600"
-                  }`}>
-                    VISA
-                  </span>
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded transition-all ${
-                    detectedBrand === "mastercard" ? "bg-red-600 text-white shadow-xs" : "bg-slate-200 text-slate-600"
-                  }`}>
-                    MC
-                  </span>
-                  <span className={`text-[10px] font-black px-2 py-0.5 rounded transition-all ${
-                    detectedBrand === "amex" ? "bg-sky-600 text-white shadow-xs" : "bg-slate-200 text-slate-600"
-                  }`}>
-                    AMEX
-                  </span>
+
+                {/* Card Number */}
+                <div className="mb-4 relative z-10">
+                  <div className="font-mono text-base sm:text-lg font-bold tracking-widest text-slate-100 drop-shadow-sm">
+                    {cardData.number || "•••• •••• •••• ••••"}
+                  </div>
+                </div>
+
+                {/* Holder & Expiry */}
+                <div className="flex items-end justify-between text-xs relative z-10">
+                  <div className="truncate max-w-[190px]">
+                    <span className="text-[9px] uppercase tracking-wider text-slate-400 block font-bold">
+                      {lang === "ar" ? "صاحب البطاقة" : "Titulaire"}
+                    </span>
+                    <span className="font-bold tracking-wide uppercase text-slate-200 truncate block">
+                      {cardData.holderName || (lang === "ar" ? "الاسم الكامل" : "NOM PRENOM")}
+                    </span>
+                  </div>
+
+                  <div className="text-right flex-shrink-0">
+                    <span className="text-[9px] uppercase tracking-wider text-slate-400 block font-bold">
+                      Expire
+                    </span>
+                    <span className="font-mono font-bold text-slate-200">
+                      {cardData.expiry || "MM/YY"}
+                    </span>
+                  </div>
                 </div>
               </div>
 
+              {/* Accepted Banks Reassurance Banner */}
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-700 font-bold flex items-center gap-2">
+                <span className="text-base">💳</span>
+                <span>{t.cardBanksNotice}</span>
+              </div>
+
+              {/* Card Inputs */}
               <div>
                 <label htmlFor="card-holderName" className="block text-[11px] font-black text-slate-800 mb-1">
                   {t.cardHolderLabel}
@@ -842,7 +897,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                   name="holderName"
                   value={cardData.holderName}
                   onChange={handleCardChange}
-                  placeholder="e.g. JOHN MILLER"
+                  placeholder="NOM PRENOM DU TITULAIRE"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold uppercase bg-white focus:outline-none focus:ring-3 focus:ring-orange-500/20"
                 />
                 {cardErrors.holderName && (
@@ -862,7 +917,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                     name="number"
                     value={cardData.number}
                     onChange={handleCardChange}
-                    placeholder="4242 •••• •••• 4242"
+                    placeholder="Numéro de carte bancaire (16 chiffres)"
                     dir="ltr"
                     maxLength={19}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono font-bold tracking-wider bg-white focus:outline-none focus:ring-3 focus:ring-orange-500/20"
@@ -909,7 +964,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                     name="cvc"
                     value={cardData.cvc}
                     onChange={handleCardChange}
-                    placeholder="CVC (3 digits)"
+                    placeholder="CVC / CVV"
                     dir="ltr"
                     maxLength={4}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono font-bold text-center bg-white focus:outline-none focus:ring-3 focus:ring-orange-500/20"
@@ -920,12 +975,12 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                 </div>
               </div>
 
-              <div className="pt-1 flex items-center justify-between text-[10px] text-slate-500 font-medium">
-                <span className="flex items-center gap-1">
-                  <Lock className="w-3 h-3 text-emerald-600" />
-                  <span>3D Secure 2.0 (SCA Protected)</span>
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-1 text-[11px] text-slate-500 font-medium border-t border-slate-200">
+                <span className="flex items-center gap-1 text-emerald-700 font-bold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>3D Secure 2.0 (Validation par code SMS bancaire)</span>
                 </span>
-                <span className="font-bold text-slate-700">PCI-DSS Level 1</span>
+                <span className="font-bold text-slate-600">Conforme PCI-DSS Level 1</span>
               </div>
             </div>
           )}
@@ -1114,8 +1169,8 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                 <span>
                   {paymentMethod === "stripe"
                     ? (lang === "ar"
-                        ? `دفع آمن الآن • ${isMorocco ? `${totalAmount} DH` : `$${totalAmount.toFixed(2)}`}`
-                        : `Pay Securely Now • ${isMorocco ? `${totalAmount} DH` : `$${totalAmount.toFixed(2)}`}`)
+                        ? `دفع آمن بالبطاقة البنكية • ${isMorocco ? `${totalAmount} DH` : `$${totalAmount.toFixed(2)}`}`
+                        : `Payer par Carte Bancaire • ${isMorocco ? `${totalAmount} DH` : `$${totalAmount.toFixed(2)}`}`)
                     : t.ctaButton}
                 </span>
               </>

@@ -158,7 +158,7 @@ export function ConfirmationClient() {
                   {isStripe && (
                     <>
                       <CreditCard className="w-3.5 h-3.5 text-blue-600" />
-                      <span>{order.cardBrand || "Card"} {order.cardLast4 ? `•••• ${order.cardLast4}` : "(Stripe)"}</span>
+                      <span>{isArabic ? "بطاقة بنكية" : "Carte Bancaire"} ({order.cardBrand || "CB"} {order.cardLast4 ? `•••• ${order.cardLast4}` : ""})</span>
                     </>
                   )}
                   {isPaypal && (
