@@ -650,21 +650,21 @@ export default function AdminOrdersPage() {
 
         {/* 5. HARMONIOUS ORDERS TABLE (Clean Notion/Shopify Design) */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-          {/* Table déroulant avec en-têtes figés */}
-          <div className="overflow-x-auto max-h-[600px] overflow-y-auto relative">
-            <table className="w-full text-left text-xs sm:text-sm border-collapse">
+          {/* Table déroulant sans barre de défilement horizontale */}
+          <div className="overflow-x-hidden max-h-[620px] overflow-y-auto relative">
+            <table className="w-full text-left text-xs sm:text-sm border-collapse table-auto">
               <thead className="sticky top-0 z-20 bg-slate-50/95 backdrop-blur-md shadow-xs">
                 <tr className="text-slate-600 font-bold border-b border-slate-200 text-[11px] uppercase tracking-wider">
-                  <th className="py-3.5 px-4 text-center">Réf.</th>
-                  <th className="py-3.5 px-4">Date</th>
-                  <th className="py-3.5 px-4">Client & Contact</th>
-                  <th className="py-3.5 px-4">Destination</th>
-                  <th className="py-3.5 px-4">Pack & Choix</th>
-                  <th className="py-3.5 px-4 text-center">Montant</th>
-                  <th className="py-3.5 px-4 text-center min-w-[210px]">
+                  <th className="py-3 px-2 sm:px-3 text-center w-14">Réf.</th>
+                  <th className="py-3 px-2 sm:px-3 w-20 sm:w-24">Date</th>
+                  <th className="py-3 px-2 sm:px-3">Client & Contact</th>
+                  <th className="py-3 px-2 sm:px-3">Destination</th>
+                  <th className="py-3 px-2 sm:px-3">Pack & Choix</th>
+                  <th className="py-3 px-2 sm:px-3 text-center w-20">Montant</th>
+                  <th className="py-3 px-2 sm:px-3 text-center w-44">
                     Statut (Liste déroulante)
                   </th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
+                  <th className="py-3 px-2 sm:px-3 text-right w-16">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium">
@@ -705,7 +705,7 @@ export default function AdminOrdersPage() {
                         className="hover:bg-slate-50/70 transition-colors group"
                       >
                         {/* ID */}
-                        <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                        <td className="py-3 px-2 sm:px-3 text-center">
                           <button
                             onClick={() => setActiveOrderModal(ord)}
                             className="font-mono text-xs font-bold text-orange-600 hover:text-orange-700 hover:underline cursor-pointer"
@@ -715,7 +715,7 @@ export default function AdminOrdersPage() {
                         </td>
 
                         {/* Date */}
-                        <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap text-xs">
+                        <td className="py-3 px-2 sm:px-3 text-slate-500 text-xs">
                           <div className="font-semibold text-slate-700">
                             {new Date(ord.createdAt).toLocaleDateString("fr-FR", {
                               day: "2-digit",
@@ -731,9 +731,9 @@ export default function AdminOrdersPage() {
                         </td>
 
                         {/* Customer & Quick Contacts */}
-                        <td className="py-3.5 px-4">
+                        <td className="py-3 px-2 sm:px-3">
                           <div className="flex flex-col">
-                            <span className="font-bold text-slate-900">
+                            <span className="font-bold text-slate-900 leading-tight">
                               {ord.customer?.fullName || "Client anonyme"}
                             </span>
                             <div className="flex items-center gap-1.5 mt-1">
@@ -742,7 +742,7 @@ export default function AdminOrdersPage() {
                               </span>
 
                               {ord.customer?.phone && (
-                                <div className="flex items-center gap-1 ml-1">
+                                <div className="flex items-center gap-1 ml-0.5">
                                   {/* Call button */}
                                   <a
                                     href={`tel:${ord.customer.phone}`}
@@ -769,18 +769,18 @@ export default function AdminOrdersPage() {
                         </td>
 
                         {/* Destination */}
-                        <td className="py-3.5 px-4 max-w-xs text-xs">
+                        <td className="py-3 px-2 sm:px-3 text-xs">
                           <span className="inline-block font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-md mb-0.5">
                             {ord.customer?.city || "—"}
                           </span>
-                          <p className="text-slate-500 truncate" title={ord.customer?.address}>
+                          <p className="text-slate-500 truncate max-w-[150px] sm:max-w-xs" title={ord.customer?.address}>
                             {ord.customer?.address || "—"}
                           </p>
                         </td>
 
                         {/* Product Choices */}
-                        <td className="py-3.5 px-4 text-xs whitespace-nowrap">
-                          <span className="font-semibold text-slate-900 block">
+                        <td className="py-3 px-2 sm:px-3 text-xs">
+                          <span className="font-semibold text-slate-900 block truncate max-w-[140px] sm:max-w-none">
                             {ord.pack}
                           </span>
                           <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-0.5">
@@ -791,7 +791,7 @@ export default function AdminOrdersPage() {
                         </td>
 
                         {/* Amount */}
-                        <td className="py-3.5 px-4 text-center whitespace-nowrap">
+                        <td className="py-3 px-2 sm:px-3 text-center whitespace-nowrap">
                           <span className="font-black text-slate-900 text-sm">
                             {ord.total}
                           </span>
@@ -801,21 +801,21 @@ export default function AdminOrdersPage() {
                         </td>
 
                         {/* Menu Déroulant interactif directement sur le tableau */}
-                        <td className="py-3.5 px-4 text-center">
+                        <td className="py-3 px-2 sm:px-3 text-center">
                           <div className="relative inline-block text-left">
                             <button
                               type="button"
                               onClick={() =>
                                 setActiveDropdownId(activeDropdownId === ord.id ? null : ord.id)
                               }
-                              className={`inline-flex items-center justify-between gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold border shadow-xs transition-all cursor-pointer hover:shadow-sm active:scale-98 ${cfg.bg} ${cfg.text} ${cfg.border}`}
+                              className={`inline-flex items-center justify-between gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold border shadow-xs transition-all cursor-pointer hover:shadow-sm active:scale-98 ${cfg.bg} ${cfg.text} ${cfg.border}`}
                             >
                               <div className="flex items-center gap-1.5 truncate">
                                 <span className={`w-2 h-2 rounded-full ${cfg.dot}`} />
-                                <span>{ord.status || "🟡 Nouveau"}</span>
+                                <span className="truncate max-w-[95px] sm:max-w-none">{ord.status || "🟡 Nouveau"}</span>
                               </div>
                               <ChevronDown
-                                className={`w-3.5 h-3.5 transition-transform duration-200 opacity-70 ${
+                                className={`w-3.5 h-3.5 transition-transform duration-200 opacity-70 shrink-0 ${
                                   activeDropdownId === ord.id ? "rotate-180" : ""
                                 }`}
                               />
@@ -829,7 +829,7 @@ export default function AdminOrdersPage() {
                                   onClick={() => setActiveDropdownId(null)}
                                 />
                                 <div
-                                  className={`absolute left-0 w-52 bg-white rounded-2xl shadow-2xl border border-slate-200/90 py-1.5 z-40 animate-in fade-in zoom-in-95 duration-100 ${
+                                  className={`absolute left-1/2 -translate-x-1/2 w-48 sm:w-52 bg-white rounded-2xl shadow-2xl border border-slate-200/90 py-1.5 z-40 animate-in fade-in zoom-in-95 duration-100 ${
                                     index >= filteredOrders.length - 2
                                       ? "bottom-full mb-2"
                                       : "top-full mt-1.5"
@@ -872,7 +872,7 @@ export default function AdminOrdersPage() {
                         </td>
 
                         {/* Actions */}
-                        <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                        <td className="py-3 px-2 sm:px-3 text-right whitespace-nowrap">
                           <div className="flex items-center justify-end gap-1">
                             {/* Copy delivery info */}
                             <button
