@@ -46,12 +46,21 @@ interface OrderItem {
   total: number;
   currency: string;
   status: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
+  transactionId?: string;
+  cardBrand?: string;
+  cardLast4?: string;
   notes?: string;
   customer: {
     fullName: string;
     phone: string;
+    email?: string;
+    country?: string;
+    countryName?: string;
     city: string;
     address: string;
+    postalCode?: string;
   };
 }
 
@@ -783,7 +792,9 @@ export default function AdminOrdersPage() {
                         {/* Destination */}
                         <td className="py-3 px-2 sm:px-3 text-xs">
                           <span className="inline-block font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded-md mb-0.5">
-                            {ord.customer?.city || "—"}
+                            {ord.customer?.countryName || ord.customer?.country
+                              ? `${ord.customer?.city || ""}${ord.customer?.city ? ", " : ""}${ord.customer?.countryName || ord.customer?.country}`
+                              : (ord.customer?.city || "—")}
                           </span>
                           <p className="text-slate-500 truncate max-w-[150px] sm:max-w-xs" title={ord.customer?.address}>
                             {ord.customer?.address || "—"}
@@ -802,14 +813,22 @@ export default function AdminOrdersPage() {
                           </div>
                         </td>
 
-                        {/* Amount */}
+                        {/* Amount & Payment Method */}
                         <td className="py-3 px-2 sm:px-3 text-center whitespace-nowrap">
-                          <span className="font-black text-slate-900 text-sm">
-                            {ord.total}
-                          </span>
-                          <span className="text-[11px] text-slate-500 font-bold ml-1">
-                            DH
-                          </span>
+                          <div className="font-black text-slate-900 text-sm">
+                            {ord.currency === "USD" ? `$${Number(ord.total).toFixed(2)}` : `${ord.total} DH`}
+                          </div>
+                          {ord.paymentMethod && (
+                            <span className={`inline-block text-[10px] font-black px-1.5 py-0.2 rounded mt-0.5 ${
+                              ord.paymentMethod.toLowerCase() === "stripe"
+                                ? "bg-blue-100 text-blue-800"
+                                : ord.paymentMethod.toLowerCase() === "paypal"
+                                ? "bg-sky-100 text-sky-800"
+                                : "bg-emerald-100 text-emerald-800"
+                            }`}>
+                              {ord.paymentMethod.toUpperCase()}
+                            </span>
+                          )}
                         </td>
 
                         {/* Menu Déroulant interactif directement sur le tableau */}
@@ -948,7 +967,7 @@ export default function AdminOrdersPage() {
             <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div>
                 <span className="text-xs font-bold text-orange-600">
-                  Détails Commande COD
+                  Détails de la Commande
                 </span>
                 <h3 className="text-lg font-black text-slate-900">
                   #{activeOrderModal.id}
@@ -967,7 +986,7 @@ export default function AdminOrdersPage() {
               {/* Customer Card */}
               <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 space-y-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                  Informations Client
+                  Informations Client & Destination
                 </span>
                 <div className="grid grid-cols-2 gap-2 text-slate-700">
                   <div>
@@ -980,11 +999,19 @@ export default function AdminOrdersPage() {
                       {activeOrderModal.customer?.phone}
                     </strong>
                   </div>
+                  {activeOrderModal.customer?.email && (
+                    <div className="col-span-2">
+                      <span className="text-slate-400 block text-[11px]">Email :</span>
+                      <strong className="text-slate-900 font-mono">
+                        {activeOrderModal.customer.email}
+                      </strong>
+                    </div>
+                  )}
                   <div className="col-span-2">
-                    <span className="text-slate-400 block text-[11px]">Ville & Adresse :</span>
+                    <span className="text-slate-400 block text-[11px]">Destination & Adresse :</span>
                     <p className="text-slate-900 font-medium">
                       <span className="font-bold text-orange-600">
-                        {activeOrderModal.customer?.city}
+                        {activeOrderModal.customer?.countryName || activeOrderModal.customer?.country || "Maroc"} • {activeOrderModal.customer?.city}
                       </span>{" "}
                       • {activeOrderModal.customer?.address}
                     </p>
@@ -992,24 +1019,36 @@ export default function AdminOrdersPage() {
                 </div>
               </div>
 
-              {/* Order Items */}
+              {/* Order Items & Payment */}
               <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/70 space-y-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                  Contenu du Colis
-                </span>
+                <div className="flex justify-between items-center">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                    Contenu du Colis & Paiement
+                  </span>
+                  {activeOrderModal.paymentMethod && (
+                    <span className="text-[11px] font-black px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+                      Paiement : {activeOrderModal.paymentMethod.toUpperCase()}
+                    </span>
+                  )}
+                </div>
                 <div className="flex justify-between items-center text-slate-900 font-medium">
                   <div>
                     <p className="font-bold">{activeOrderModal.pack}</p>
                     <p className="text-xs text-slate-500">
                       Couleur: {activeOrderModal.color} • Pointure: {activeOrderModal.size}
                     </p>
+                    {activeOrderModal.transactionId && (
+                      <p className="text-[11px] text-slate-400 font-mono mt-0.5">
+                        Txn: {activeOrderModal.transactionId}
+                      </p>
+                    )}
                   </div>
                   <div className="text-right">
                     <span className="text-base font-black text-emerald-600">
-                      {activeOrderModal.total} DH
+                      {activeOrderModal.currency === "USD" ? `$${Number(activeOrderModal.total).toFixed(2)} USD` : `${activeOrderModal.total} DH`}
                     </span>
                     <span className="text-[11px] text-slate-400 block">
-                      Livraison: {activeOrderModal.shippingFee === 0 ? "Gratuite" : "20 DH"}
+                      Livraison: {activeOrderModal.shippingFee === 0 ? "Gratuite" : `${activeOrderModal.shippingFee} DH`}
                     </span>
                   </div>
                 </div>

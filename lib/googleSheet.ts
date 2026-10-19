@@ -25,11 +25,20 @@ export interface OrderData {
   shippingFee: number;
   total: number;
   currency: string;
+  paymentMethod?: string; // 'stripe' | 'paypal' | 'cod'
+  paymentStatus?: string; // 'paid' | 'pending'
+  transactionId?: string;
+  cardBrand?: string;
+  cardLast4?: string;
   customer: {
     fullName: string;
     phone: string;
+    email?: string;
+    country?: string;
+    countryName?: string;
     city: string;
     address: string;
+    postalCode?: string;
   };
 }
 
@@ -54,7 +63,9 @@ export async function sendOrderToGoogleSheet(order: OrderData): Promise<boolean>
         minute: "2-digit",
       }),
       customerName: order.customer.fullName,
+      email: order.customer.email || "",
       phone: order.customer.phone,
+      country: order.customer.countryName || order.customer.country || "Morocco",
       city: order.customer.city,
       address: order.customer.address,
       product: order.product,
@@ -63,7 +74,10 @@ export async function sendOrderToGoogleSheet(order: OrderData): Promise<boolean>
       size: order.size,
       qty: order.qty,
       total: `${order.total} ${order.currency}`,
-      status: "🟡 Nouveau",
+      paymentMethod: order.paymentMethod?.toUpperCase() || "COD",
+      paymentStatus: order.paymentStatus === "paid" ? "🟢 Payé" : "🟡 En attente",
+      transactionId: order.transactionId || "",
+      status: order.paymentStatus === "paid" ? "🔵 Confirmé" : "🟡 Nouveau",
     };
 
     // Note: Utilisation de no-cors car Google Apps Script redirige (302) vers script.googleusercontent.com
