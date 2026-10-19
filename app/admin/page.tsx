@@ -457,12 +457,24 @@ export default function AdminOrdersPage() {
               <span>En direct</span>
             </div>
 
+            <a
+              href="https://docs.google.com/spreadsheets/d/1ZTZm3qWLxLCF-oHgwmet9g_Q0kB94272s51Oylyp6kY/edit"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white rounded-xl font-bold text-xs sm:text-sm shadow-xs transition-all"
+              title="Ouvrir mon fichier Google Sheets"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              <span className="hidden sm:inline">Mon Google Sheet</span>
+              <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+            </a>
+
             <button
               onClick={exportToCSV}
-              className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white rounded-xl font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
             >
-              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-              <span>Exporter Excel</span>
+              <Download className="w-4 h-4 text-emerald-400" />
+              <span>Exporter CSV</span>
             </button>
 
             <Link

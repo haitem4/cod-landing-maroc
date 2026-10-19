@@ -4,6 +4,12 @@
  * Collez l'URL de votre Web App Google Apps Script ci-dessous :
  * Exemple : "https://script.google.com/macros/s/AKfycbx.../exec"
  */
+export const GOOGLE_SHEET_DOC_URL =
+  "https://docs.google.com/spreadsheets/d/1ZTZm3qWLxLCF-oHgwmet9g_Q0kB94272s51Oylyp6kY/edit";
+
+export const GOOGLE_SPREADSHEET_ID =
+  "1ZTZm3qWLxLCF-oHgwmet9g_Q0kB94272s51Oylyp6kY";
+
 export const GOOGLE_SHEET_WEBAPP_URL =
   process.env.NEXT_PUBLIC_GOOGLE_SHEET_URL || "";
 
