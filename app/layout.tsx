@@ -16,12 +16,12 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "فرشات التدليك والأكيوبريسور الطبية بالمغرب | Confort Pro Maroc",
+  title: "Semelles Orthopédiques d'Acupression | Confort Pro Europe",
   description:
-    "استرجع راحة خطواتك مع فرشات التدليك والأكيوبريسور الطبية المبتكرة. تخفيف فوري لآلام القدمين والشوكة العظمية وأسفل الظهر. الدفع عند الاستلام بالمغرب.",
+    "Soulagement immédiat des douleurs de pieds, voûte plantaire et aponévrosite. Livraison express offerte en Europe & paiement 100% sécurisé par Carte Bancaire et PayPal.",
   openGraph: {
-    title: "فرشات التدليك الطبية المريحة - Confort Pro Maroc",
-    description: "راحة فائقة وامتصاص فعال للصدمات لكل خطوة. تلائم جميع الأحذية.",
+    title: "Semelles Orthopédiques d'Acupression - Confort Pro Europe",
+    description: "Confort supérieur et absorption des micro-chocs à chaque pas. Découpe facile adaptable à toutes vos chaussures.",
     images: [
       {
         url: "/images/orange_clean.webp",
@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" className={`${inter.variable} ${cairo.variable}`}>
+    <html lang="fr" className={`${inter.variable} ${cairo.variable}`}>
       <body className="min-h-screen antialiased bg-slate-100 text-slate-900 selection:bg-orange-500 selection:text-white">
         <FacebookPixel />
         {children}

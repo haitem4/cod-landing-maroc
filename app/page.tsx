@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Star, ShieldCheck, Flame, CheckCircle2, Zap } from "lucide-react";
-import { Lang, CONTENT, PRODUCT_IMAGES, COLOR_OPTIONS } from "@/lib/content";
+import { Lang, CONTENT, PRODUCT_IMAGES, COLOR_OPTIONS, BUNDLE_OFFERS } from "@/lib/content";
 import { Header } from "@/components/Header";
 import { HeroGallery } from "@/components/HeroGallery";
 import { OrderSection } from "@/components/OrderSection";
@@ -45,7 +45,7 @@ export default function ConfortProLandingPage() {
 
   return (
     <div className="min-h-screen bg-slate-200/60 flex justify-center selection:bg-orange-600 selection:text-white">
-      {/* Centered Mobile-First Column on Desktop (Exact 480-550px Senior UX Container) */}
+      {/* Centered Mobile-First Column on Desktop */}
       <main
         dir={direction}
         lang={lang}
@@ -53,10 +53,10 @@ export default function ConfortProLandingPage() {
           isArabic ? "font-arabic" : "font-sans"
         }`}
       >
-        {/* 1. HEADER (Top announcement + Logo + Language Switcher AR/EN) */}
+        {/* 1. HEADER (Top announcement + Logo + Language Switcher AR/FR) */}
         <Header lang={lang} onToggleLang={toggleLanguage} />
 
-        {/* 2. 5 REASONS TO BUY SECTION (PLACED BEFORE EVERYTHING) */}
+        {/* 2. 5 REASONS TO BUY SECTION */}
         <FiveReasonsSection lang={lang} />
 
         {/* 3. HERO PRODUCT ZONE */}
@@ -86,7 +86,7 @@ export default function ConfortProLandingPage() {
 
             <div className="flex items-center gap-1 text-[11px] font-black text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">
               <Flame className="w-3.5 h-3.5 fill-rose-600 text-rose-600 animate-pulse" />
-              <span>{lang === "ar" ? "باقي 6 قطع في المخزون" : "Only 6 Left in Stock"}</span>
+              <span>{lang === "ar" ? "باقي 6 قطع في المخزون" : "Plus que 6 pièces en stock"}</span>
             </div>
           </div>
 
@@ -95,19 +95,19 @@ export default function ConfortProLandingPage() {
             {t.heroTitle}
           </h1>
 
-          {/* Pricing Highlight */}
+          {/* Pricing Highlight in EUR */}
           <div className="p-3.5 rounded-2xl bg-slate-50 border-2 border-slate-200/90 flex items-center justify-between gap-3">
             <div className="flex items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-black text-orange-600">
-                199 <span className="text-sm font-bold text-slate-800">DH</span>
+                29,99 <span className="text-sm font-bold text-slate-800">€</span>
               </span>
               <span className="text-sm text-slate-400 line-through font-bold">
-                349 DH
+                49,99 €
               </span>
             </div>
 
             <span className="bg-orange-600 text-white text-xs font-black px-3 py-1.5 rounded-xl shadow-xs animate-shimmer">
-              {lang === "ar" ? "تخفيض -45%" : "SAVE 45%"}
+              {lang === "ar" ? "تخفيض -40%" : "-40% EN EUROPE"}
             </span>
           </div>
 
@@ -115,7 +115,7 @@ export default function ConfortProLandingPage() {
           <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200">
             <div className="flex items-center gap-2">
               <span className="text-xs font-black text-slate-800">
-                {lang === "ar" ? "اللون المحدد :" : "Color :"}
+                {lang === "ar" ? "اللون المحدد :" : "Couleur :"}
               </span>
               <span className="text-xs font-bold text-orange-600">
                 {lang === "ar" ? currentColorObj.nameAr : currentColorObj.nameEn}
@@ -163,7 +163,7 @@ export default function ConfortProLandingPage() {
           </div>
         </section>
 
-        {/* 4. ORDER SECTION (Color + Size + Bundle Stack + Moroccan COD Form) */}
+        {/* 4. ORDER SECTION (Color + Size + Bundle Stack + European Checkout Form) */}
         <div id="order-section" className="px-4 bg-slate-50/50">
           <OrderSection
             lang={lang}
@@ -172,38 +172,38 @@ export default function ConfortProLandingPage() {
           />
         </div>
 
-        {/* 4. THE CONFORT PRO DIFFERENCE (Before vs After) */}
+        {/* 5. THE CONFORT PRO DIFFERENCE (Before vs After) */}
         <BeforeAfterSection lang={lang} />
 
-        {/* 5. TARGET AUDIENCE (Nurses, Construction, Athletes, Daily Walking) */}
+        {/* 6. TARGET AUDIENCE (Nurses, Construction, Athletes, Daily Walking) */}
         <TargetAudience lang={lang} />
 
-        {/* 6. CLINICAL STATS (95% pain relief, 94% comfort, 90% injury prevention) */}
+        {/* 7. CLINICAL STATS (95% pain relief, 94% comfort, 90% injury prevention) */}
         <ClinicalStats lang={lang} />
 
-        {/* 7. COMPARISON TABLE (Confort Pro vs Others) */}
+        {/* 8. COMPARISON TABLE (Confort Pro vs Others) */}
         <ComparisonTable lang={lang} />
 
-        {/* 8. DOCTOR RECOMMENDATION (Dr. Thomas Schneider Podiatrist) */}
+        {/* 9. DOCTOR RECOMMENDATION (Dr. Thomas Schneider Podiatrist) */}
         <DoctorSection lang={lang} />
 
-        {/* 9. FREE EBOOK BONUS BANNER */}
+        {/* 10. FREE EBOOK BONUS BANNER */}
         <FreeEbookBanner lang={lang} />
 
-        {/* 10. VERIFIED CUSTOMER REVIEWS */}
+        {/* 11. VERIFIED CUSTOMER REVIEWS */}
         <CustomerReviews lang={lang} />
 
-        {/* 11. FAQ ACCORDION */}
+        {/* 12. FAQ ACCORDION */}
         <FAQSection lang={lang} />
 
-        {/* 12. FOOTER */}
+        {/* 13. FOOTER */}
         <Footer lang={lang} />
 
-        {/* 13. MOBILE STICKY BOTTOM BAR */}
-        <StickyCTA lang={lang} price={199} />
+        {/* 14. MOBILE STICKY BOTTOM BAR (EUR) */}
+        <StickyCTA lang={lang} price={29.99} />
 
-        {/* 14. FLOATING WHATSAPP BUTTON */}
-        <WhatsAppButton lang={lang} whatsappNumber="212600000000" />
+        {/* 15. FLOATING WHATSAPP BUTTON */}
+        <WhatsAppButton lang={lang} whatsappNumber="33600000000" />
       </main>
     </div>
   );

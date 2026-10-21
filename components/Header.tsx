@@ -31,26 +31,26 @@ export const Header: React.FC<HeaderProps> = ({ lang, onToggleLang }) => {
           </div>
           <div className="flex flex-col">
             <span className="font-black text-base tracking-tight text-slate-900 leading-none">
-              CONFORT<span className="text-orange-600 font-extrabold text-xs ml-1">PRO MAROC</span>
+              CONFORT<span className="text-orange-600 font-extrabold text-xs ml-1">PRO EUROPE</span>
             </span>
             <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              {lang === "ar" ? "المتجر الرسمي المعتمد بالمغرب 🇲🇦" : "Official Morocco Store 🇲🇦"}
+              {lang === "ar" ? "المتجر الرسمي المعتمد بأوروبا 🇪🇺" : "Boutique Officielle Europe 🇪🇺"}
             </span>
           </div>
         </div>
 
-        {/* Right side: Language Switcher Button & Trust pill */}
+        {/* Right side: Language Switcher Button & Delivery pill */}
         <div className="flex items-center gap-2">
           {/* Quick Language Toggle */}
           <button
             type="button"
             onClick={onToggleLang}
-            className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black py-1.5 px-3 rounded-full border border-slate-300 shadow-xs transition-transform active:scale-95"
-            title={lang === "ar" ? "Switch to English" : "التحويل إلى العربية"}
+            className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black py-1.5 px-3 rounded-full border border-slate-300 shadow-xs transition-transform active:scale-95 cursor-pointer"
+            title={lang === "ar" ? "Passer en Français" : "التحويل إلى العربية"}
           >
             <Globe className="w-3.5 h-3.5 text-orange-600" />
-            <span>{lang === "ar" ? "EN (English)" : "العربية (AR)"}</span>
+            <span>{lang === "ar" ? "FR (Français)" : "العربية (AR)"}</span>
           </button>
 
           {/* Fast Delivery Pill */}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useId } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { event as trackFbEvent } from "@/lib/fpixel";
 import { sendOrderToGoogleSheet, OrderData } from "@/lib/googleSheet";
@@ -21,10 +21,6 @@ import {
   Gift,
   CreditCard,
   ShieldCheck,
-  Globe,
-  DollarSign,
-  ChevronRight,
-  ExternalLink,
 } from "lucide-react";
 import {
   Lang,
@@ -32,19 +28,14 @@ import {
   COLOR_OPTIONS,
   SIZES,
   BUNDLE_OFFERS,
-  MOROCCAN_CITIES,
 } from "@/lib/content";
 import {
   PAYMENT_CONFIG,
   INTERNATIONAL_COUNTRIES,
-  CountryOption,
   PaymentMethod,
 } from "@/lib/paymentConfig";
 import {
-  isCasablanca,
-  getShippingFee,
   validateOrderForm,
-  formatMoroccanPhone,
   detectCardBrand,
   formatCardNumber,
   formatCardExpiry,
@@ -74,9 +65,9 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
   }, []);
 
   // Selection states
-  const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(1); // Default to 2 pairs (Most popular)
+  const [selectedOfferIndex, setSelectedOfferIndex] = useState<number>(1); // Default to 2 pairs (Plus populaire)
   const [selectedSize, setSelectedSize] = useState<string>(SIZES[2].label); // EU 39-40
-  const [selectedCountryCode, setSelectedCountryCode] = useState<string>("US");
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>("FR"); // Default France / Europe
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe");
 
   // Form Fields
@@ -105,26 +96,18 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
   const selectedCountry =
     INTERNATIONAL_COUNTRIES.find((c) => c.code === selectedCountryCode) ||
     INTERNATIONAL_COUNTRIES[0];
-  const isMorocco = selectedCountryCode === "MA";
 
   const currentOffer = BUNDLE_OFFERS[selectedOfferIndex] || BUNDLE_OFFERS[0];
 
-  // Pricing calculations
-  const displayCurrency = isMorocco ? "DH" : "USD";
-  const currencySymbol = isMorocco ? "DH" : "$";
-  const offerPrice = isMorocco ? currentOffer.price : currentOffer.priceUsd;
-  const originalOfferPrice = isMorocco ? currentOffer.originalPrice : currentOffer.originalPriceUsd;
+  // Pricing calculations - 100% EUR for Europe
+  const displayCurrency = "EUR";
+  const currencySymbol = "€";
+  const offerPrice = currentOffer.price;
+  const originalOfferPrice = currentOffer.originalPrice;
 
-  // Shipping
-  const shippingFee = isMorocco ? getShippingFee(formData.city) : 0; // FREE international express shipping
-  const totalAmount = isMorocco ? offerPrice + shippingFee : offerPrice;
-
-  // Auto-switch payment method if COD selected and user changes away from Morocco
-  useEffect(() => {
-    if (!isMorocco && paymentMethod === "cod") {
-      setPaymentMethod("stripe");
-    }
-  }, [selectedCountryCode, isMorocco, paymentMethod]);
+  // FREE Express Shipping in Europe (0,00 €)
+  const shippingFee = 0;
+  const totalAmount = offerPrice;
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -163,18 +146,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
   };
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newCode = e.target.value;
-    setSelectedCountryCode(newCode);
-    const country = INTERNATIONAL_COUNTRIES.find((c) => c.code === newCode);
-    if (newCode === "MA") {
-      if (!formData.city) {
-        setFormData((prev) => ({ ...prev, city: MOROCCAN_CITIES[0] }));
-      }
-    } else {
-      if (MOROCCAN_CITIES.includes(formData.city)) {
-        setFormData((prev) => ({ ...prev, city: "" }));
-      }
-    }
+    setSelectedCountryCode(e.target.value);
   };
 
   const detectedBrand = detectCardBrand(cardData.number);
@@ -185,27 +157,27 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
     if (!validateCardNumber(cardData.number)) {
       newCardErrors.number =
         lang === "ar"
-          ? "يرجى إدخال رقم بطاقة صحيح"
-          : "Please enter a valid credit card number";
+          ? "يرجى إدخال رقم بطاقة صحيح (Visa, Mastercard, Amex)"
+          : "Numéro de carte invalide (Visa, Mastercard, Amex acceptées)";
     }
 
     if (!validateExpiry(cardData.expiry)) {
       newCardErrors.expiry =
         lang === "ar"
-          ? "تاريخ غير صالح (MM/YY)"
-          : "Invalid expiry date (MM/YY)";
+          ? "تاريخ الصلاحية غير صحيح (MM/YY)"
+          : "Date d'expiration invalide (MM/AA)";
     }
 
     if (cardData.cvc.length < 3) {
       newCardErrors.cvc =
-        lang === "ar" ? "رمز الأمان غير مكتمل" : "Invalid CVC code (3 or 4 digits)";
+        lang === "ar" ? "رمز الأمان غير مكتمل (CVC)" : "Code CVC / CVV invalide (3 ou 4 chiffres)";
     }
 
     if (!cardData.holderName || cardData.holderName.trim().length < 3) {
       newCardErrors.holderName =
         lang === "ar"
           ? "يرجى كتابة الاسم كما هو على البطاقة"
-          : "Please enter cardholder name as written on card";
+          : "Veuillez renseigner le nom tel qu'inscrit sur la carte";
     }
 
     setCardErrors(newCardErrors);
@@ -219,7 +191,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
   ) => {
     const activeMethod = customPaymentMethod || paymentMethod;
 
-    // Validate customer info
+    // Validate customer contact and delivery address
     const validation = validateOrderForm(
       {
         fullName: formData.fullName,
@@ -259,20 +231,22 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 
     try {
       const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-      const orderPrefix = isMorocco ? "CFP" : "INT";
-      const orderId = `${orderPrefix}-${Date.now().toString().slice(-4)}${randomSuffix.toString().slice(-4)}`;
+      const orderId = `EUR-${Date.now().toString().slice(-4)}${randomSuffix.toString().slice(-4)}`;
 
-      const isPaid = activeMethod === "stripe" || activeMethod === "paypal";
+      const isPaid = true; // All European orders are paid online (Stripe / PayPal)
       const txnId =
         paypalDetails?.id ||
         (activeMethod === "stripe"
           ? `ch_${Math.random().toString(36).substring(2, 14)}`
           : undefined);
 
-      // Clean masked card (PCI-DSS: NEVER save full card number!)
+      // Clean masked card (PCI-DSS compliance: NEVER persist full card number)
       const rawCard = cardData.number.replace(/\D/g, "");
       const cardLast4 = rawCard.length >= 4 ? rawCard.slice(-4) : undefined;
-      const cardBrand = activeMethod === "stripe" ? detectedBrand.toUpperCase() : undefined;
+      const cardBrand =
+        activeMethod === "stripe"
+          ? (detectedBrand === "unknown" ? "CARTE BANCAIRE" : detectedBrand.toUpperCase())
+          : undefined;
 
       const orderPayload: OrderData = {
         id: orderId,
@@ -306,7 +280,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
         },
       };
 
-      // Store securely in session and local history
+      // Store in session and local history
       if (typeof window !== "undefined") {
         sessionStorage.setItem("stepprs_last_order", JSON.stringify(orderPayload));
         try {
@@ -316,7 +290,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
         } catch (e) {}
       }
 
-      // Send to Google Sheets (including payment method & transaction ID)
+      // Send to Google Sheets
       try {
         await Promise.race([
           sendOrderToGoogleSheet(orderPayload),
@@ -330,7 +304,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
       trackFbEvent("Purchase", {
         content_name: "Confort Pro Insoles",
         value: totalAmount,
-        currency: displayCurrency === "DH" ? "MAD" : "USD",
+        currency: "EUR",
         num_items: currentOffer.qty,
         order_id: orderId,
       });
@@ -343,7 +317,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
       setServerError(
         lang === "ar"
           ? "عذراً، حدث خطأ أثناء معالجة الطلب. يرجى المحاولة مرة أخرى."
-          : "An error occurred while processing your order. Please try again."
+          : "Une erreur est survenue lors du traitement sécurisé de votre commande. Veuillez réessayer."
       );
       setIsSubmitting(false);
       return false;
@@ -398,7 +372,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           </label>
           <span className="text-[11px] text-orange-700 font-bold bg-orange-100/80 px-2 py-0.5 rounded-full flex items-center gap-1">
             <Scissors className="w-3 h-3" />
-            <span>Trim-to-fit</span>
+            <span>Trim-to-fit (Découpe facile)</span>
           </span>
         </div>
 
@@ -433,16 +407,15 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           <label className="block text-xs sm:text-sm font-black text-slate-900">
             {t.offersTitle}
           </label>
-          <span className="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-            {isMorocco ? "شحن مجاني لكازا" : "✈️ FREE Express Shipping"}
+          <span className="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
+            <Truck className="w-3 h-3 text-emerald-600" />
+            <span>Livraison Gratuite en Europe 🇪🇺</span>
           </span>
         </div>
 
         <div className="space-y-3">
           {BUNDLE_OFFERS.map((offer, idx) => {
             const isSelected = selectedOfferIndex === idx;
-            const price = isMorocco ? offer.price : offer.priceUsd;
-            const origPrice = isMorocco ? offer.originalPrice : offer.originalPriceUsd;
 
             return (
               <div
@@ -491,10 +464,10 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
 
                   <div className="text-right flex-shrink-0">
                     <div className="text-xl sm:text-2xl font-black text-orange-600 leading-tight">
-                      {isMorocco ? `${price} DH` : `$${price.toFixed(2)}`}
+                      {offer.price.toFixed(2).replace(".", ",")} €
                     </div>
                     <div className="text-xs text-slate-400 line-through font-bold">
-                      {isMorocco ? `${origPrice} DH` : `$${origPrice.toFixed(2)}`}
+                      {offer.originalPrice.toFixed(2).replace(".", ",")} €
                     </div>
                   </div>
                 </div>
@@ -504,7 +477,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
         </div>
       </div>
 
-      {/* 4. INTERNATIONAL CHECKOUT FORM */}
+      {/* 4. EUROPEAN CHECKOUT FORM */}
       <form
         id="order-form"
         onSubmit={handleFormSubmit}
@@ -581,7 +554,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
             {errors.fullName && <p className="mt-1.5 text-xs text-rose-600 font-bold">{errors.fullName}</p>}
           </div>
 
-          {/* Email Address (Crucial for international receipts & tracking) */}
+          {/* Email Address (Crucial for European receipts & parcel tracking) */}
           <div>
             <label htmlFor="field-email" className="block text-xs font-black text-slate-800 mb-1.5">
               {t.emailLabel}
@@ -625,7 +598,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                placeholder={isMorocco ? "06 XX XX XX XX" : "123 456 7890"}
+                placeholder={t.phonePlaceholder}
                 dir="ltr"
                 className={`w-full ${lang === "ar" ? "pr-20 pl-4" : "pl-20 pr-4"} py-3 rounded-2xl border text-sm font-bold tracking-wider focus:outline-none focus:ring-4 transition-all ${
                   errors.phone
@@ -637,7 +610,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
             {errors.phone && <p className="mt-1.5 text-xs text-rose-600 font-bold">{errors.phone}</p>}
           </div>
 
-          {/* City / State Fields */}
+          {/* City & Postal Code */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="field-city" className="block text-xs font-black text-slate-800 mb-1.5">
@@ -647,38 +620,19 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                 <div className={`absolute top-1/2 -translate-y-1/2 ${lang === "ar" ? "right-3.5" : "left-3.5"} text-slate-400 pointer-events-none`}>
                   <MapPin className="w-4 h-4" />
                 </div>
-                {isMorocco ? (
-                  <select
-                    id="field-city"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    className="w-full pr-10 pl-4 py-3 rounded-2xl border border-slate-300 bg-slate-50/50 hover:bg-white text-xs font-black text-slate-800 focus:outline-none focus:ring-4 focus:border-orange-600 focus:ring-orange-500/15"
-                  >
-                    {MOROCCAN_CITIES.map((c, idx) => {
-                      const isCasa = isCasablanca(c);
-                      return (
-                        <option key={idx} value={c}>
-                          {c} {isCasa ? "(0 DH)" : "(+30 DH)"}
-                        </option>
-                      );
-                    })}
-                  </select>
-                ) : (
-                  <input
-                    id="field-city"
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    placeholder="New York, Paris, London..."
-                    className={`w-full ${lang === "ar" ? "pr-10 pl-4" : "pl-10 pr-4"} py-3 rounded-2xl border text-sm font-semibold focus:outline-none focus:ring-4 transition-all ${
-                      errors.city
-                        ? "border-rose-400 bg-rose-50/40 focus:ring-rose-200"
-                        : "border-slate-300 focus:border-orange-600 focus:ring-orange-500/15 bg-slate-50/50 hover:bg-white"
-                    }`}
-                  />
-                )}
+                <input
+                  id="field-city"
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  placeholder="Paris, Bruxelles, Genève, Lyon, Berlin..."
+                  className={`w-full ${lang === "ar" ? "pr-10 pl-4" : "pl-10 pr-4"} py-3 rounded-2xl border text-sm font-semibold focus:outline-none focus:ring-4 transition-all ${
+                    errors.city
+                      ? "border-rose-400 bg-rose-50/40 focus:ring-rose-200"
+                      : "border-slate-300 focus:border-orange-600 focus:ring-orange-500/15 bg-slate-50/50 hover:bg-white"
+                  }`}
+                />
               </div>
               {errors.city && <p className="mt-1.5 text-xs text-rose-600 font-bold">{errors.city}</p>}
             </div>
@@ -693,7 +647,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                 name="postalCode"
                 value={formData.postalCode}
                 onChange={handleInputChange}
-                placeholder="ZIP / Postal code / State"
+                placeholder="Ex: 75008, 1000, 1201..."
                 className="w-full px-4 py-3 rounded-2xl border border-slate-300 bg-slate-50/50 hover:bg-white text-sm font-semibold focus:outline-none focus:ring-4 focus:border-orange-600 focus:ring-orange-500/15"
               />
             </div>
@@ -721,7 +675,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
           </div>
         </div>
 
-        {/* 5. PAYMENT METHODS SELECTOR TABS */}
+        {/* 5. PAYMENT METHODS SELECTOR TABS (Carte Bancaire & PayPal) */}
         <div className="mt-6 pt-5 border-t-2 border-slate-100 space-y-4">
           <div className="flex items-center justify-between">
             <label className="block text-xs sm:text-sm font-black text-slate-900">
@@ -729,77 +683,66 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
             </label>
             <span className="text-[11px] text-slate-500 font-bold flex items-center gap-1">
               <Lock className="w-3 h-3 text-emerald-600" />
-              <span>256-Bit SSL</span>
+              <span>Chiffrement SSL 256-Bit</span>
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            {/* Carte Bancaire Option */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Carte Bancaire (Visa, Mastercard, American Express) */}
             <button
               type="button"
               onClick={() => setPaymentMethod("stripe")}
-              className={`p-3.5 rounded-2xl border-2 flex sm:flex-col items-center justify-between sm:justify-center gap-2 transition-all ${
+              className={`p-3.5 rounded-2xl border-2 flex items-center justify-between gap-2 transition-all cursor-pointer ${
                 paymentMethod === "stripe"
                   ? "border-orange-600 bg-orange-50/70 ring-4 ring-orange-500/15 shadow-sm"
                   : "border-slate-200 bg-slate-50/60 hover:border-slate-300"
               }`}
             >
-              <div className="flex items-center gap-2">
-                <CreditCard className={`w-5 h-5 ${paymentMethod === "stripe" ? "text-orange-600" : "text-slate-600"}`} />
-                <span className="text-xs font-black text-slate-900">
-                  {lang === "ar" ? "بطاقة بنكية (Carte Bancaire)" : "Carte Bancaire / Credit Card"}
-                </span>
+              <div className="flex items-center gap-2.5">
+                <div className={`p-2 rounded-xl ${paymentMethod === "stripe" ? "bg-orange-600 text-white" : "bg-slate-200 text-slate-700"}`}>
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <div className="text-left">
+                  <span className="text-xs font-black text-slate-900 block">
+                    {lang === "ar" ? "بطاقة بنكية دولية" : "Carte Bancaire"}
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-bold">
+                    Visa • Mastercard • Amex
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">CB</span>
-                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">VISA</span>
-                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">MC</span>
-                <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-slate-200 text-slate-800">CMI</span>
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">VISA</span>
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">MC</span>
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-sky-100 text-sky-900">AMEX</span>
               </div>
             </button>
 
-            {/* PayPal Option */}
+            {/* PayPal */}
             <button
               type="button"
               onClick={() => setPaymentMethod("paypal")}
-              className={`p-3.5 rounded-2xl border-2 flex sm:flex-col items-center justify-between sm:justify-center gap-2 transition-all ${
+              className={`p-3.5 rounded-2xl border-2 flex items-center justify-between gap-2 transition-all cursor-pointer ${
                 paymentMethod === "paypal"
                   ? "border-[#0070BA] bg-blue-50/80 ring-4 ring-blue-500/15 shadow-sm"
                   : "border-slate-200 bg-slate-50/60 hover:border-slate-300"
               }`}
             >
-              <div className="flex items-center gap-2">
-                <span className="text-[#0070BA] font-black text-base italic">P</span>
-                <span className="text-xs font-black text-slate-900">
-                  {t.paypalTab}
-                </span>
+              <div className="flex items-center gap-2.5">
+                <div className={`p-2 rounded-xl ${paymentMethod === "paypal" ? "bg-[#0070BA] text-white" : "bg-slate-200 text-slate-700"}`}>
+                  <span className="font-black text-sm italic leading-none">P</span>
+                </div>
+                <div className="text-left">
+                  <span className="text-xs font-black text-slate-900 block">
+                    {t.paypalTab}
+                  </span>
+                  <span className="text-[10px] text-blue-700 font-bold">
+                    Protection des Achats
+                  </span>
+                </div>
               </div>
-              <span className="text-[10px] text-blue-700 font-extrabold bg-blue-100/70 px-2 py-0.5 rounded-md">
-                Buyer Protection
-              </span>
-            </button>
-
-            {/* Cash on Delivery (Morocco only) */}
-            <button
-              type="button"
-              disabled={!isMorocco}
-              onClick={() => setPaymentMethod("cod")}
-              className={`p-3.5 rounded-2xl border-2 flex sm:flex-col items-center justify-between sm:justify-center gap-2 transition-all ${
-                !isMorocco
-                  ? "opacity-50 cursor-not-allowed border-slate-200 bg-slate-100"
-                  : paymentMethod === "cod"
-                  ? "border-emerald-600 bg-emerald-50/70 ring-4 ring-emerald-500/15 shadow-sm"
-                  : "border-slate-200 bg-slate-50/60 hover:border-slate-300"
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <Truck className={`w-5 h-5 ${paymentMethod === "cod" ? "text-emerald-600" : "text-slate-600"}`} />
-                <span className="text-xs font-black text-slate-900">
-                  {t.codTab}
-                </span>
-              </div>
-              <span className="text-[10px] font-bold text-slate-600">
-                {isMorocco ? (lang === "ar" ? "عند المعاينة" : "Upon Delivery") : "Morocco only"}
+              <span className="text-[10px] text-blue-700 font-extrabold bg-blue-100/80 px-2 py-0.5 rounded-md">
+                1-Click
               </span>
             </button>
           </div>
@@ -827,7 +770,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                     </svg>
                   </div>
 
-                  {/* Card Brand Logo */}
+                  {/* Card Brand Logo (Visa, Mastercard, Amex) */}
                   <div className="flex items-center gap-1.5">
                     {detectedBrand === "visa" && (
                       <span className="font-black italic text-lg sm:text-xl tracking-wider text-white">VISA</span>
@@ -842,10 +785,10 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                       <span className="font-black text-xs px-2 py-0.5 rounded bg-sky-500 text-white tracking-widest">AMEX</span>
                     )}
                     {detectedBrand === "unknown" && (
-                      <div className="flex items-center gap-1">
-                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-white/20 text-white">CB</span>
+                      <div className="flex items-center gap-1.5">
                         <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-white/20 text-white">VISA</span>
-                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-white/20 text-white">MC</span>
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-white/20 text-white">MASTERCARD</span>
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded bg-white/20 text-white">AMEX</span>
                       </div>
                     )}
                   </div>
@@ -862,7 +805,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                 <div className="flex items-end justify-between text-xs relative z-10">
                   <div className="truncate max-w-[190px]">
                     <span className="text-[9px] uppercase tracking-wider text-slate-400 block font-bold">
-                      {lang === "ar" ? "صاحب البطاقة" : "Titulaire"}
+                      {lang === "ar" ? "صاحب البطاقة" : "Titulaire de la carte"}
                     </span>
                     <span className="font-bold tracking-wide uppercase text-slate-200 truncate block">
                       {cardData.holderName || (lang === "ar" ? "الاسم الكامل" : "NOM PRENOM")}
@@ -874,13 +817,13 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                       Expire
                     </span>
                     <span className="font-mono font-bold text-slate-200">
-                      {cardData.expiry || "MM/YY"}
+                      {cardData.expiry || "MM/AA"}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Accepted Banks Reassurance Banner */}
+              {/* Accepted Card Networks Reassurance Banner */}
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-700 font-bold flex items-center gap-2">
                 <span className="text-base">💳</span>
                 <span>{t.cardBanksNotice}</span>
@@ -897,7 +840,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                   name="holderName"
                   value={cardData.holderName}
                   onChange={handleCardChange}
-                  placeholder="NOM PRENOM DU TITULAIRE"
+                  placeholder="NOM ET PRENOM DU TITULAIRE"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-bold uppercase bg-white focus:outline-none focus:ring-3 focus:ring-orange-500/20"
                 />
                 {cardErrors.holderName && (
@@ -917,7 +860,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                     name="number"
                     value={cardData.number}
                     onChange={handleCardChange}
-                    placeholder="Numéro de carte bancaire (16 chiffres)"
+                    placeholder="Numéro de carte (16 chiffres)"
                     dir="ltr"
                     maxLength={19}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono font-bold tracking-wider bg-white focus:outline-none focus:ring-3 focus:ring-orange-500/20"
@@ -943,7 +886,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                     name="expiry"
                     value={cardData.expiry}
                     onChange={handleCardChange}
-                    placeholder="MM/YY"
+                    placeholder="MM/AA"
                     dir="ltr"
                     maxLength={5}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-mono font-bold text-center bg-white focus:outline-none focus:ring-3 focus:ring-orange-500/20"
@@ -978,9 +921,9 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-1 text-[11px] text-slate-500 font-medium border-t border-slate-200">
                 <span className="flex items-center gap-1 text-emerald-700 font-bold">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>3D Secure 2.0 (Validation par code SMS bancaire)</span>
+                  <span>Protégé par 3D Secure 2.0 (Validation SMS/App bancaire)</span>
                 </span>
-                <span className="font-bold text-slate-600">Conforme PCI-DSS Level 1</span>
+                <span className="font-bold text-slate-600">Certifié PCI-DSS Level 1</span>
               </div>
             </div>
           )}
@@ -996,14 +939,14 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                   </span>
                 </div>
                 <span className="text-[11px] text-blue-700 font-bold">
-                  PayPal Buyer Protection
+                  Protection des Achats PayPal
                 </span>
               </div>
 
               <p className="text-xs text-slate-600 leading-relaxed font-medium">
                 {lang === "ar"
-                  ? "ادفع بأمان عبر حساب PayPal أو بطاقتك البنكية أو الدفع بالتقسيط مع حماية المشتري الكاملة."
-                  : "Pay safely with your PayPal balance, credit card, or 4 interest-free installments with 100% Buyer Protection."}
+                  ? "ادفع بأمان وسرعة بنقرة واحدة عبر حساب PayPal الخاص بك أو بالبطاقة البنكية مع حماية المشتري الكاملة."
+                  : "Payez en toute sécurité en 1 clic avec votre compte PayPal ou carte bancaire. Vous bénéficiez de 100% de la Protection des Achats PayPal."}
               </p>
 
               {/* PayPal Official SDK buttons */}
@@ -1012,7 +955,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                   <PayPalScriptProvider
                     options={{
                       clientId: PAYMENT_CONFIG.paypalClientId,
-                      currency: "USD",
+                      currency: "EUR",
                       intent: "capture",
                     }}
                   >
@@ -1046,7 +989,7 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                             el.focus();
                             el.scrollIntoView({ behavior: "smooth", block: "center" });
                           }
-                          return Promise.reject(new Error("Please complete customer information first"));
+                          return Promise.reject(new Error("Veuillez renseigner vos coordonnées de livraison d'abord"));
                         }
 
                         return actions.order.create({
@@ -1054,10 +997,10 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                           purchase_units: [
                             {
                               amount: {
-                                currency_code: "USD",
+                                currency_code: "EUR",
                                 value: totalAmount.toFixed(2),
                               },
-                              description: `${currentOffer.qty}x Medical Acupressure Insoles (${selectedColor} - ${selectedSize})`,
+                              description: `${currentOffer.qty}x Semelles Orthopédiques Acupression (${selectedColor} - ${selectedSize})`,
                             },
                           ],
                         });
@@ -1072,11 +1015,10 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
                       }}
                       onError={(err) => {
                         console.error("PayPal Error:", err);
-                        // Provide friendly fallback
                         setServerError(
                           lang === "ar"
                             ? "حدثت مشكلة أثناء تشغيل PayPal. يمكنك أيضاً الدفع مباشرة بالبطاقة البنكية."
-                            : "PayPal connection issue. You can also complete your payment with Credit / Debit Card."
+                            : "Problème de connexion PayPal. Vous pouvez également régler directement par Carte Bancaire ci-dessus."
                         );
                       }}
                     />
@@ -1085,29 +1027,14 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               )}
             </div>
           )}
-
-          {/* TAB 3: CASH ON DELIVERY (MOROCCO ONLY) */}
-          {paymentMethod === "cod" && (
-            <div className="p-4 rounded-2xl bg-emerald-50/70 border-2 border-emerald-200/80 space-y-2 animate-fadeIn">
-              <div className="flex items-center gap-2 text-emerald-800 text-xs font-black">
-                <Truck className="w-4 h-4 text-emerald-600" />
-                <span>{lang === "ar" ? "الدفع عند الاستلام داخل المغرب" : "Cash on Delivery (Morocco)"}</span>
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                {lang === "ar"
-                  ? "لا تدفع أي سنتيم مسبقاً! سيتصل بك فريقنا لتأكيد موعد التوصيل، ويمكنك معاينة وفحص الطرد ثم الدفع نقداً للموزع."
-                  : "No upfront payment required. Our delivery agent will bring the package to your door. You inspect the parcel and pay cash."}
-              </p>
-            </div>
-          )}
         </div>
 
         {/* 6. LIVE ORDER RECAP */}
         <div className="mt-6 p-4 rounded-2xl bg-slate-50/90 border-2 border-slate-200 space-y-2.5">
           <div className="flex justify-between items-center text-xs text-slate-600 font-bold">
-            <span>{lang === "ar" ? "سعر العرض المختار :" : "Selected Offer Price :"}</span>
+            <span>{lang === "ar" ? "سعر الباقة المختارة :" : "Prix du pack sélectionné :"}</span>
             <span className="font-black text-slate-900">
-              {isMorocco ? `${offerPrice} DH` : `$${offerPrice.toFixed(2)}`}
+              {offerPrice.toFixed(2).replace(".", ",")} €
             </span>
           </div>
 
@@ -1116,14 +1043,8 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               <Truck className="w-3.5 h-3.5 text-slate-500" />
               <span>{t.shippingLabel}</span>
             </span>
-            <span className={`font-black px-2.5 py-0.5 rounded-md text-xs ${
-              shippingFee === 0
-                ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                : "bg-amber-100 text-amber-900 border border-amber-300"
-            }`}>
-              {isMorocco
-                ? (shippingFee === 0 ? t.shippingFreeCasa : t.shippingOther)
-                : t.shippingWorldwideFree}
+            <span className="font-black px-2.5 py-0.5 rounded-md text-xs bg-emerald-100 text-emerald-800 border border-emerald-300">
+              {t.shippingWorldwideFree}
             </span>
           </div>
 
@@ -1135,20 +1056,18 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
               <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
                 <Check className="w-3 h-3 text-emerald-600" />
                 <span>
-                  {paymentMethod === "cod"
-                    ? (lang === "ar" ? "الدفع نقداً بعد فحص الطرد" : "Pay cash after inspection")
-                    : (lang === "ar" ? "دفع آمن ومحمي 100%" : "100% Protected Transaction")}
+                  {lang === "ar" ? "دفع إلكتروني آمن ومحمي 100%" : "Paiement 100% sécurisé et garanti"}
                 </span>
               </span>
             </div>
             <span className="text-2xl sm:text-3xl font-black text-orange-600">
-              {isMorocco ? `${totalAmount} DH` : `$${totalAmount.toFixed(2)}`}
+              {totalAmount.toFixed(2).replace(".", ",")} €
             </span>
           </div>
         </div>
 
-        {/* 7. MAIN CTA SUBMIT BUTTON (For Card and COD) */}
-        {paymentMethod !== "paypal" && (
+        {/* 7. MAIN CTA SUBMIT BUTTON (For Carte Bancaire) */}
+        {paymentMethod === "stripe" && (
           <button
             type="submit"
             disabled={isSubmitting}
@@ -1161,17 +1080,15 @@ export const OrderSection: React.FC<OrderSectionProps> = ({
             {isSubmitting ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>{lang === "ar" ? "جاري معالجة طلبكم بأمان..." : "Processing secure order..."}</span>
+                <span>{lang === "ar" ? "جاري معالجة الدفع بأمان..." : "Traitement sécurisé du paiement..."}</span>
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
                 <span>
-                  {paymentMethod === "stripe"
-                    ? (lang === "ar"
-                        ? `دفع آمن بالبطاقة البنكية • ${isMorocco ? `${totalAmount} DH` : `$${totalAmount.toFixed(2)}`}`
-                        : `Payer par Carte Bancaire • ${isMorocco ? `${totalAmount} DH` : `$${totalAmount.toFixed(2)}`}`)
-                    : t.ctaButton}
+                  {lang === "ar"
+                    ? `دفع آمن بالبطاقة البنكية • ${totalAmount.toFixed(2).replace(".", ",")} €`
+                    : `Payer par Carte Bancaire • ${totalAmount.toFixed(2).replace(".", ",")} €`}
                 </span>
               </>
             )}

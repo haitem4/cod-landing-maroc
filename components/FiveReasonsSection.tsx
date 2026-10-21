@@ -11,7 +11,9 @@ import {
   ArrowRight, 
   ArrowLeft,
   CheckCircle,
-  Sparkles
+  Sparkles,
+  CreditCard,
+  Lock
 } from "lucide-react";
 
 interface FiveReasonsSectionProps {
@@ -29,11 +31,11 @@ export const FiveReasonsSection: React.FC<FiveReasonsSectionProps> = ({ lang }) 
       bgColor: "bg-amber-500/10",
       borderColor: "border-amber-200",
       badgeAr: "راحة فورية من أول يوم",
-      badgeEn: "Instant Relief On First Step",
+      badgeEn: "Soulagement Immédiat Dès le Premier Pas",
       titleAr: "تخفيف فوري لآلام القدمين والظهر",
-      titleEn: "Instant Foot & Lower Back Pain Relief",
+      titleEn: "Soulagement Instantané des Pieds et du Dos",
       descAr: "تصميم طبي متطور يمتص الصدمات ويستهدف نقاط الألم الحساسة، مما يخفف آلام الشوكة العظمية (Épine calcanéenne) والتهاب اللفافة الأخمصية (Fasciite plantaire) بشكل فوري.",
-      descEn: "Advanced orthopedic design absorbs up to 90% of ground shock, relieving acute pain from heel spurs, plantar fasciitis, and lower spine fatigue immediately.",
+      descEn: "Conception biomécanique avancée qui absorbe jusqu'à 90% des chocs sur sol dur, soulageant immédiatement l'aponévrosite plantaire, l'épine calcanéenne et la fatigue musculaire.",
     },
     {
       num: "02",
@@ -42,11 +44,11 @@ export const FiveReasonsSection: React.FC<FiveReasonsSectionProps> = ({ lang }) 
       bgColor: "bg-blue-500/10",
       borderColor: "border-blue-200",
       badgeAr: "تصحيح الوضعية والمشي",
-      badgeEn: "Postural & Gait Alignment",
+      badgeEn: "Alignement Postural & Voûte Plantaire",
       titleAr: "دعم مقوس ثلاثي الأبعاد (3D Arch Support)",
-      titleEn: "3D Ergonomic Arch Support",
+      titleEn: "Soutien Ergonomique 3D de la Voûte",
       descAr: "تقنية بيوميكانيكية ترفع وتدعم قوس القدم إلى زاويته الطبيعية، لمنع تسطح القدمين وتوزيع وزن الجسم بتوازن يريح الركبتين ومفاصل الورك والعمود الفقري.",
-      descEn: "Biomechanical curvature stabilizes the midfoot arch, preventing fallen arches and redistributing pressure to protect knees, hips, and back posture.",
+      descEn: "La courbure ergonomique stabilise l'arche médiane, évitant l'affaissement du pied et redistribuant la pression pour protéger vos genoux, hanches et colonne vertébrale.",
     },
     {
       num: "03",
@@ -55,11 +57,11 @@ export const FiveReasonsSection: React.FC<FiveReasonsSectionProps> = ({ lang }) 
       bgColor: "bg-rose-500/10",
       borderColor: "border-rose-200",
       badgeAr: "مكافحة التورم والإرهاق",
-      badgeEn: "Eliminates Swelling & Fatigue",
+      badgeEn: "Active la Micro-Circulation",
       titleAr: "تدليك مستمر وتنشيط الدورة الدموية",
-      titleEn: "Active Acupressure Circulation Nodes",
+      titleEn: "Noeuds d'Acupression Massants Actifs",
       descAr: "حبيبات التدليك الاستراتيجية تحفز باطن القدم مع كل خطوة، مما يعزز تدفق الدم ويقضي نهائياً على ثقل وتشنج الساقين وتورم القدمين بعد ساعات العمل الطويلة.",
-      descEn: "Smart acupressure nodules micro-massage nerve endings with every stride, enhancing blood circulation and preventing legs from swelling after long shifts.",
+      descEn: "Des picots d'acupression massent délicatement vos terminaisons nerveuses à chaque foulée, relançant la circulation pour éliminer les jambes lourdes après de longues heures debout.",
     },
     {
       num: "04",
@@ -68,11 +70,11 @@ export const FiveReasonsSection: React.FC<FiveReasonsSectionProps> = ({ lang }) 
       bgColor: "bg-emerald-500/10",
       borderColor: "border-emerald-200",
       badgeAr: "مقاسات من 35 إلى 46",
-      badgeEn: "Fits All Sizes EU 35-46",
+      badgeEn: "Découpe Facile du 35 au 46",
       titleAr: "قص مخصص وتوافق تام مع كل الأحذية",
-      titleEn: "Universal Fit & Trim-To-Size Convenience",
+      titleEn: "Ajustement Universel Sur-Mesure",
       descAr: "خطوط مقاسات دقيقة مطبوعة على الجهة السفلية تتيح قص الفرشة بالمقص بدقة فائقة. تلائم الأحذية الرياضية، أحذية العمل الكلاسيكية، والأحذية العسكرية وأحذية السلامة.",
-      descEn: "Precision guided cut lines make it effortless to trim for a glove-like fit in running shoes, formal leather shoes, boots, and industrial safety footwear.",
+      descEn: "Des lignes de découpe précises au dos permettent un ajustement parfait aux ciseaux pour toutes vos chaussures de sécurité, baskets de running, bottes ou chaussures de ville.",
     },
     {
       num: "05",
@@ -80,12 +82,12 @@ export const FiveReasonsSection: React.FC<FiveReasonsSectionProps> = ({ lang }) 
       iconColor: "text-orange-500",
       bgColor: "bg-orange-500/10",
       borderColor: "border-orange-200",
-      badgeAr: "معاينة قبل الدفع + ضمان",
-      badgeEn: "Inspect Before Paying + Guarantee",
-      titleAr: "تسوق مغربي آمن 100%: الدفع عند الاستلام",
-      titleEn: "100% Risk-Free Cash On Delivery in Morocco",
-      descAr: "لا تدفع أي درهم مسبقاً! عاين طلبك وتأكد من الجودة والمقاس أمام موزع التوصيل في منزلك، مع توصيل سريع 24-48 ساعة لجميع مدن المغرب وضمان استبدال.",
-      descEn: "Zero risk: inspect your order at your doorstep before handing over any payment. Fast 24-48h nationwide delivery across all Moroccan cities.",
+      badgeAr: "شحن مجاني + دفع آمن 100%",
+      badgeEn: "Livraison Gratuite Europe + Garantie 30j",
+      titleAr: "شحن سريع ومجاني في أوروبا ودفع إلكتروني آمن",
+      titleEn: "Livraison Express Offerte en Europe & Paiement Sécurisé",
+      descAr: "شحن سريع ومجاني لجميع دول أوروبا (فرنسا، بلجيكا، سويسرا...). دفع إلكتروني آمن 100% عبر بطاقات الائتمان العالمية Visa و Mastercard و American Express أو PayPal مع ضمان استرجاع 30 يوماً.",
+      descEn: "Expédition express 24-48h 100% gratuite dans toute l'Europe (France, Belgique, Suisse, Luxembourg...). Paiement en ligne hautement sécurisé par Carte Bancaire (Visa, Mastercard, Amex) ou PayPal avec garantie satisfait ou remboursé 30 jours.",
     },
   ];
 
@@ -103,19 +105,19 @@ export const FiveReasonsSection: React.FC<FiveReasonsSectionProps> = ({ lang }) 
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-1.5 text-xs font-black text-orange-700 bg-orange-100/90 px-3 py-1.5 rounded-full border border-orange-300">
             <Sparkles className="w-3.5 h-3.5 text-orange-600 animate-pulse" />
-            <span>{isAr ? "لماذا يختارها الآلاف في المغرب؟" : "Why 88,000+ Customers Love Us"}</span>
+            <span>{isAr ? "لماذا يختارها الآلاف في أوروبا؟" : "Adopté par plus de 88 000 clients en Europe"}</span>
           </div>
 
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
             {isAr
               ? "5 أسباب تجعل هذه الفرشات الطبية خيارك الأمثل لراحة يومية تدوم"
-              : "5 Reasons Why These Insoles Are Your Ultimate Daily Comfort Upgrade"}
+              : "5 Raisons de Choisir nos Semelles Médicales Confort Pro"}
           </h2>
 
           <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-md mx-auto">
             {isAr
               ? "حل جذري ومثبت علمياً لمشاكل الوقوف الطويل، آلام الكعب والشوكة العظمية"
-              : "A clinically proven, natural solution for standing all day, heel pain, and arch fatigue"}
+              : "Une solution biomécanique validée contre la fatigue de la station debout et les douleurs au talon"}
           </p>
         </div>
 
@@ -166,9 +168,9 @@ export const FiveReasonsSection: React.FC<FiveReasonsSectionProps> = ({ lang }) 
           <button
             type="button"
             onClick={scrollToOrder}
-            className="w-full group bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-black py-3.5 px-6 rounded-2xl shadow-lg shadow-orange-600/25 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm sm:text-base"
+            className="w-full group bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-black py-3.5 px-6 rounded-2xl shadow-lg shadow-orange-600/25 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
           >
-            <span>{isAr ? "استفد من العرض الحصري الآن (تخفيض حتى 60%)" : "Claim Your Exclusive Discount (Up To 60% Off)"}</span>
+            <span>{isAr ? "استفد من العرض الحصري الآن (تخفيض حتى 60%)" : "Profiter de l'offre spéciale (Jusqu'à -60%)"}</span>
             {isAr ? (
               <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
             ) : (
@@ -181,24 +183,24 @@ export const FiveReasonsSection: React.FC<FiveReasonsSectionProps> = ({ lang }) 
               const el = document.getElementById("hero-product");
               if (el) el.scrollIntoView({ behavior: "smooth" });
             }}
-            className="w-full mt-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-4 rounded-xl border border-slate-300/80 transition-all text-xs sm:text-sm flex items-center justify-center gap-1.5"
+            className="w-full mt-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-4 rounded-xl border border-slate-300/80 transition-all text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer"
           >
-            <span>{isAr ? "معاينة صور المنتج ومواصفاته بالتفصيل ↓" : "View Product Photos & Full Specs ↓"}</span>
+            <span>{isAr ? "معاينة صور المنتج ومواصفاته بالتفصيل ↓" : "Voir les photos et caractéristiques du produit ↓"}</span>
           </button>
           <div className="mt-2 flex items-center justify-center gap-4 text-[11px] text-slate-500 font-bold">
             <span className="flex items-center gap-1">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-              {isAr ? "دفع عند الاستلام" : "Cash On Delivery"}
+              <Lock className="w-3.5 h-3.5 text-emerald-600" />
+              {isAr ? "دفع آمن 100%" : "Paiement 100% Sécurisé"}
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              <Truck className="w-3.5 h-3.5 text-emerald-600" />
+              {isAr ? "توصيل سريع مجاني في أوروبا" : "Livraison Gratuite en Europe"}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
               <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-              {isAr ? "توصيل سريع مجاني" : "Fast Free Shipping"}
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-              {isAr ? "كتاب إلكتروني مجاني 🎁" : "Free Bonus eBook 🎁"}
+              {isAr ? "كتاب إلكتروني مجاني 🎁" : "E-book Offert 🎁"}
             </span>
           </div>
         </div>

@@ -121,17 +121,12 @@ export function validateOrderForm(
     errors.phone =
       lang === "ar"
         ? "يرجى إدخال رقم الهاتف للتواصل"
-        : "Please enter your phone number";
-  } else if (data.country === "MA" && !isValidMoroccanPhone(data.phone)) {
-    errors.phone =
-      lang === "ar"
-        ? "يرجى إدخال رقم هاتف مغربي صحيح (مثال: 0612345678)"
-        : "Please enter a valid Moroccan phone number (e.g. 0612345678)";
+        : "Veuillez renseigner votre numéro de téléphone";
   } else if (!isValidInternationalPhone(data.phone)) {
     errors.phone =
       lang === "ar"
-        ? "يرجى إدخال رقم هاتف دولي صحيح"
-        : "Please enter a valid phone number";
+        ? "يرجى إدخال رقم هاتف صحيح للتواصل"
+        : "Veuillez renseigner un numéro de téléphone valide";
   }
 
   if (!data.address || data.address.trim().length < 5) {

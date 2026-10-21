@@ -65,7 +65,7 @@ export async function sendOrderToGoogleSheet(order: OrderData): Promise<boolean>
       customerName: order.customer.fullName,
       email: order.customer.email || "",
       phone: order.customer.phone,
-      country: order.customer.countryName || order.customer.country || "Morocco",
+      country: order.customer.countryName || order.customer.country || "France",
       city: order.customer.city,
       address: order.customer.address,
       product: order.product,
@@ -73,11 +73,11 @@ export async function sendOrderToGoogleSheet(order: OrderData): Promise<boolean>
       color: order.color,
       size: order.size,
       qty: order.qty,
-      total: `${order.total} ${order.currency}`,
+      total: `${Number(order.total).toFixed(2).replace('.', ',')} ${order.currency}`,
       paymentMethod:
         order.paymentMethod?.toLowerCase() === "stripe"
-          ? `CARTE BANCAIRE (${order.cardBrand || "CB"})`
-          : order.paymentMethod?.toUpperCase() || "COD",
+          ? `CARTE BANCAIRE (${order.cardBrand || "VISA/MC/AMEX"})`
+          : order.paymentMethod?.toUpperCase() || "PAYPAL",
       paymentStatus: order.paymentStatus === "paid" ? "🟢 Payé" : "🟡 En attente",
       transactionId: order.transactionId || "",
       status: order.paymentStatus === "paid" ? "🔵 Confirmé" : "🟡 Nouveau",

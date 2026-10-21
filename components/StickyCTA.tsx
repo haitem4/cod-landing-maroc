@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Sparkles, ArrowDown } from "lucide-react";
+import { Sparkles, ArrowDown, ShieldCheck } from "lucide-react";
 import { Lang } from "@/lib/content";
 
 interface StickyCTAProps {
@@ -49,20 +49,20 @@ export const StickyCTA: React.FC<StickyCTAProps> = ({ lang, price }) => {
         <div className="flex flex-col">
           <span className="text-[10px] text-emerald-700 font-extrabold flex items-center gap-1 uppercase">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            {lang === "ar" ? "الدفع عند الاستلام" : "Cash On Delivery"}
+            {lang === "ar" ? "شحن مجاني بأوروبا" : "Livraison Gratuite 🇪🇺"}
           </span>
           <span className="text-xl font-black text-orange-600 leading-tight">
-            {price} <span className="text-xs font-bold text-slate-800">DH</span>
+            {price.toFixed(2).replace(".", ",")} <span className="text-xs font-bold text-slate-800">€</span>
           </span>
         </div>
 
         <button
           type="button"
           onClick={scrollToForm}
-          className="cta-pulse flex-1 bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-black text-xs sm:text-sm py-3.5 px-4 rounded-2xl shadow-lg shadow-orange-600/30 flex items-center justify-center gap-1.5"
+          className="cta-pulse flex-1 bg-orange-600 hover:bg-orange-700 active:scale-95 text-white font-black text-xs sm:text-sm py-3.5 px-4 rounded-2xl shadow-lg shadow-orange-600/30 flex items-center justify-center gap-1.5 cursor-pointer"
         >
           <Sparkles className="w-4 h-4 text-amber-300" />
-          <span>{lang === "ar" ? "اطلب الآن (الدفع عند الاستلام)" : "ORDER NOW (COD)"}</span>
+          <span>{lang === "ar" ? "اطلب الآن بأمان" : "COMMANDER EN LIGNE"}</span>
           <ArrowDown className="w-4 h-4 animate-bounce" />
         </button>
       </div>

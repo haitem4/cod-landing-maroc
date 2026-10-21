@@ -130,108 +130,149 @@ const STATUS_KEYS = Object.keys(STATUS_CONFIG);
 
 const INITIAL_DEMO_ORDERS: OrderItem[] = [
   {
-    id: "CFP-8491",
+    id: "EUR-8491",
     createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
-    product: "فرشات التدليك الطبية (Confort Pro)",
+    product: "Semelles Orthopédiques Acupression Pro",
     color: "orange",
     size: "EU 41-42",
-    pack: "عرض زوجين (الأكثر طلباً)",
+    pack: "2 Paires (Le Plus Populaire)",
     qty: 2,
-    unitPrice: 279,
+    unitPrice: 49.99,
     shippingFee: 0,
-    total: 279,
-    currency: "DH",
-    status: "🟡 Nouveau",
-    notes: "Le client souhaite une livraison avant 18h",
-    customer: {
-      fullName: "يوسف المنصوري",
-      phone: "0661234567",
-      city: "Casablanca",
-      address: "حي المعاريف، زنقة 14، عمارة الأمل، رقم 25",
-    },
-  },
-  {
-    id: "CFP-7822",
-    createdAt: new Date(Date.now() - 1000 * 60 * 150).toISOString(),
-    product: "فرشات التدليك الطبية (Confort Pro)",
-    color: "blue",
-    size: "EU 39-40",
-    pack: "عرض 3 أزواج (توفير عائلي)",
-    qty: 3,
-    unitPrice: 359,
-    shippingFee: 0,
-    total: 359,
-    currency: "DH",
+    total: 49.99,
+    currency: "EUR",
+    paymentMethod: "stripe",
+    paymentStatus: "paid",
+    transactionId: "ch_3Pq1v8Lkd9wZ",
+    cardBrand: "VISA",
+    cardLast4: "4242",
     status: "🔵 Confirmé",
-    notes: "Confirmé par appel, expédition ce matin",
+    notes: "Paiement 3D Secure validé. Colis préparé pour envoi rapide",
     customer: {
-      fullName: "فاطمة الزهراء العمراني",
-      phone: "0670987654",
-      city: "Rabat",
-      address: "حي أكدال، شارع فال ولد عمير، إقامة السلام",
+      fullName: "Thomas Dubois",
+      phone: "+33 6 12 34 56 78",
+      email: "thomas.dubois@email.fr",
+      country: "FR",
+      countryName: "France",
+      city: "Paris",
+      address: "14 Rue du Faubourg Saint-Honoré",
+      postalCode: "75008",
     },
   },
   {
-    id: "CFP-6219",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
-    product: "فرشات التدليك الطبية (Confort Pro)",
-    color: "green",
-    size: "EU 43-44",
-    pack: "عرض زوج واحد",
-    qty: 1,
-    unitPrice: 199,
-    shippingFee: 20,
-    total: 219,
-    currency: "DH",
+    id: "EUR-7822",
+    createdAt: new Date(Date.now() - 1000 * 60 * 150).toISOString(),
+    product: "Semelles Orthopédiques Acupression Pro",
+    color: "black",
+    size: "EU 39-40",
+    pack: "3 Paires (Pack Famille Confort)",
+    qty: 3,
+    unitPrice: 69.99,
+    shippingFee: 0,
+    total: 69.99,
+    currency: "EUR",
+    paymentMethod: "paypal",
+    paymentStatus: "paid",
+    transactionId: "PAYID-MN68910QZ",
     status: "🚚 En cours d'expédition",
-    notes: "Numéro de suivi Ozon Express: OZ-98412",
+    notes: "Numéro de suivi DHL Express: DHL-88492019EU",
     customer: {
-      fullName: "أحمد بنجلون",
-      phone: "0665432109",
-      city: "Marrakech",
-      address: "حي جيليز، قرب مقهى النخيل، زنقة طارق",
+      fullName: "Sarah Jenkins",
+      phone: "+32 470 12 34 56",
+      email: "sarah.jenkins@gmail.com",
+      country: "BE",
+      countryName: "Belgique",
+      city: "Bruxelles",
+      address: "Avenue Louise 204",
+      postalCode: "1050",
     },
   },
   {
-    id: "CFP-5140",
+    id: "EUR-6219",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
+    product: "Semelles Orthopédiques Acupression Pro",
+    color: "grey",
+    size: "EU 43-44",
+    pack: "1 Paire (Pack Découverte)",
+    qty: 1,
+    unitPrice: 29.99,
+    shippingFee: 0,
+    total: 29.99,
+    currency: "EUR",
+    paymentMethod: "stripe",
+    paymentStatus: "paid",
+    transactionId: "ch_9841NqAmex001",
+    cardBrand: "AMEX",
+    cardLast4: "0005",
+    status: "🟢 Livré / Payé",
+    notes: "Livraison effectuée avec succès au domicile",
+    customer: {
+      fullName: "Alexandre Meyer",
+      phone: "+41 79 123 45 67",
+      email: "alex.meyer@swissmail.ch",
+      country: "CH",
+      countryName: "Suisse",
+      city: "Genève",
+      address: "Rue du Rhône 42",
+      postalCode: "1204",
+    },
+  },
+  {
+    id: "EUR-5140",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    product: "فرشات التدليك الطبية (Confort Pro)",
+    product: "Semelles Orthopédiques Acupression Pro",
     color: "orange",
     size: "EU 37-38",
-    pack: "عرض زوجين",
-    qty: 2,
-    unitPrice: 279,
+    pack: "5 Paires (Pack Sérénité Maxi-Éco)",
+    qty: 5,
+    unitPrice: 99.99,
     shippingFee: 0,
-    total: 279,
-    currency: "DH",
+    total: 99.99,
+    currency: "EUR",
+    paymentMethod: "stripe",
+    paymentStatus: "paid",
+    transactionId: "ch_7718Mc91823",
+    cardBrand: "MASTERCARD",
+    cardLast4: "5555",
     status: "🟢 Livré / Payé",
-    notes: "Livré avec succès et encaissé en espèces",
+    notes: "Avis client vérifié 5 étoiles laissé en ligne",
     customer: {
-      fullName: "سناء الإدريسي",
-      phone: "0662112233",
-      city: "Tanger",
-      address: "حي مالاباطا، مجمع النور، عمارة B",
+      fullName: "Lucas Martin",
+      phone: "+33 6 98 76 54 32",
+      email: "lucas.martin@orange.fr",
+      country: "FR",
+      countryName: "France",
+      city: "Lyon",
+      address: "18 Place Bellecour",
+      postalCode: "69002",
     },
   },
   {
-    id: "CFP-4910",
+    id: "EUR-4910",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 36).toISOString(),
-    product: "فرشات التدليك الطبية (Confort Pro)",
-    color: "blue",
+    product: "Semelles Orthopédiques Acupression Pro",
+    color: "black",
     size: "EU 41-42",
-    pack: "عرض زوج واحد",
-    qty: 1,
-    unitPrice: 199,
-    shippingFee: 20,
-    total: 219,
-    currency: "DH",
-    status: "🔴 Annulé",
-    notes: "Client injoignable après 3 appels",
+    pack: "2 Paires (Le Plus Populaire)",
+    qty: 2,
+    unitPrice: 49.99,
+    shippingFee: 0,
+    total: 49.99,
+    currency: "EUR",
+    paymentMethod: "paypal",
+    paymentStatus: "paid",
+    transactionId: "PAYID-PL994821",
+    status: "🟡 Nouveau",
+    notes: "Commande récente payée par PayPal",
     customer: {
-      fullName: "كريم العلمي",
-      phone: "0677889900",
-      city: "Fès",
-      address: "حي النرجس، شارع القدس",
+      fullName: "Sophie Bernard",
+      phone: "+33 6 11 22 33 44",
+      email: "sophie.bernard@gmail.com",
+      country: "FR",
+      countryName: "France",
+      city: "Bordeaux",
+      address: "5 Cours de l'Intendance",
+      postalCode: "33000",
     },
   },
 ];
@@ -323,7 +364,7 @@ export default function AdminOrdersPage() {
 
   // Copier le récapitulatif pour le livreur
   const copyForDelivery = (order: OrderItem) => {
-    const text = `📦 COMMANDE #${order.id}\n👤 Client : ${order.customer?.fullName}\n📞 Tél : ${order.customer?.phone}\n📍 Ville : ${order.customer?.city}\n🏠 Adresse : ${order.customer?.address}\n👟 Produit : ${order.pack} (${order.color}, ${order.size})\n💰 Montant à encaisser : ${order.total} DH`;
+    const text = `📦 COMMANDE #${order.id}\n👤 Client : ${order.customer?.fullName}\n📞 Tél : ${order.customer?.phone}\n📍 Destination : ${order.customer?.city}, ${order.customer?.countryName || order.customer?.country || 'Europe'}\n🏠 Adresse : ${order.customer?.address}\n👟 Produit : ${order.pack} (${order.color}, ${order.size})\n💰 Montant Total : ${Number(order.total).toFixed(2).replace('.', ',')} € (${order.paymentMethod ? order.paymentMethod.toUpperCase() : 'PAYÉ'})`;
     navigator.clipboard.writeText(text);
     setCopiedId(order.id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -347,7 +388,7 @@ export default function AdminOrdersPage() {
       "Couleur",
       "Pointure",
       "Quantite",
-      "Prix Total (DH)",
+      "Prix Total (€)",
       "Statut",
       "Notes & Suivi",
     ];
@@ -449,7 +490,7 @@ export default function AdminOrdersPage() {
                     CONFORT PRO
                   </h1>
                   <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-orange-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full">
-                    <span>🇲🇦 COD Maroc</span>
+                    <span>🇪🇺 Europe (Stripe / PayPal)</span>
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 font-medium">
@@ -532,9 +573,9 @@ export default function AdminOrdersPage() {
             </div>
             <div className="flex items-baseline gap-1.5">
               <span className="text-2xl sm:text-3xl font-black text-emerald-600">
-                {totalRevenue.toLocaleString()}
+                {totalRevenue.toFixed(2).replace(".", ",")}
               </span>
-              <span className="text-xs font-bold text-slate-500">DH</span>
+              <span className="text-xs font-bold text-slate-500">€</span>
             </div>
           </div>
 
@@ -714,7 +755,7 @@ export default function AdminOrdersPage() {
                       ? "212" + waPhone.slice(1)
                       : waPhone;
                     const waText = encodeURIComponent(
-                      `السلام عليكم أخي / أختي ${ord.customer?.fullName || ""}. معكم مصلحة الزبناء بخصوص طلبكم رقم #${ord.id} لفرشات التدليك الطبية Confort Pro Maroc. المرجو تأكيد العنوان وموعد التوصيل المناسب لكم.`
+                      `السلام عليكم أخي / أختي ${ord.customer?.fullName || ""}. معكم مصلحة الزبناء بخصوص طلبكم رقم #${ord.id} لفرشات التدليك الطبية Confort Pro Europe. المرجو تأكيد العنوان وموعد التوصيل المناسب لكم.`
                     );
                     const waLink = `https://wa.me/${waInternational}?text=${waText}`;
 
@@ -816,7 +857,7 @@ export default function AdminOrdersPage() {
                         {/* Amount & Payment Method */}
                         <td className="py-3 px-2 sm:px-3 text-center whitespace-nowrap">
                           <div className="font-black text-slate-900 text-sm">
-                            {ord.currency === "USD" ? `$${Number(ord.total).toFixed(2)}` : `${ord.total} DH`}
+                            {`${Number(ord.total).toFixed(2).replace(".", ",")} €`}
                           </div>
                           {ord.paymentMethod && (
                             <span className={`inline-block text-[10px] font-black px-1.5 py-0.2 rounded mt-0.5 ${
@@ -1011,7 +1052,7 @@ export default function AdminOrdersPage() {
                     <span className="text-slate-400 block text-[11px]">Destination & Adresse :</span>
                     <p className="text-slate-900 font-medium">
                       <span className="font-bold text-orange-600">
-                        {activeOrderModal.customer?.countryName || activeOrderModal.customer?.country || "Maroc"} • {activeOrderModal.customer?.city}
+                        {activeOrderModal.customer?.countryName || activeOrderModal.customer?.country || "France"} • {activeOrderModal.customer?.city}
                       </span>{" "}
                       • {activeOrderModal.customer?.address}
                     </p>
@@ -1045,10 +1086,10 @@ export default function AdminOrdersPage() {
                   </div>
                   <div className="text-right">
                     <span className="text-base font-black text-emerald-600">
-                      {activeOrderModal.currency === "USD" ? `$${Number(activeOrderModal.total).toFixed(2)} USD` : `${activeOrderModal.total} DH`}
+                      {`${Number(activeOrderModal.total).toFixed(2).replace(".", ",")} €`}
                     </span>
                     <span className="text-[11px] text-slate-400 block">
-                      Livraison: {activeOrderModal.shippingFee === 0 ? "Gratuite" : `${activeOrderModal.shippingFee} DH`}
+                      Livraison: {activeOrderModal.shippingFee === 0 ? "Gratuite en Europe" : `${activeOrderModal.shippingFee} €`}
                     </span>
                   </div>
                 </div>
